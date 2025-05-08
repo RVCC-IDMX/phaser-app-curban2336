@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phaser Scene Management</title>
+  <link rel="shortcut icon" href="./microscope.png" type="image/png">
+  <!-- Prism.js Core -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js" defer></script>
+  <!-- Prism.js Toolbar -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.js" defer></script>
+  <!-- Prism.js Copy to Clipboard -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"
+    defer></script>
+  <!-- Prism.js Theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-material-light.min.css">
+  <link rel="stylesheet" href="header.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    pre {
+      background-color: #f5f5f5;
+      padding: 12px;
+      border-radius: 4px;
+      overflow-x: auto;
+      border-left: 4px solid #28a745;
+    }
+
+    code {
+      font-family: 'Courier New', monospace;
+    }
+
+    .code-sample {
+      margin-bottom: 20px;
+    }
+
+    .note {
+      background-color: #e9f7fe;
+      border-left: 4px solid #3498db;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+
+    .tip {
+      background-color: #e8f5e9;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+      border-left: 4px solid #4caf50;
+    }
+
+    .warning {
+      background-color: #fff3cd;
+      padding: 15px;
+      border-radius: 5px;
+      margin: 20px 0;
+      border-left: 4px solid #ffc107;
+    }
+
+    .example-container {
+      margin-bottom: 30px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .example-header {
+      background-color: #f8f9fa;
+      padding: 15px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .example-header h3 {
+      margin: 0;
+      color: #4caf50;
+    }
+
+    .example-content {
+      padding: 15px;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <nav class="site-nav">
+        <div class="logo">
+          <a href="index.html">
+            <img src="./microscope.png" alt="microscope drawing" class="logo-img">
+            <span>Phaser.js Game Development</span>
+          </a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="assignment.html" class="nav-link">Assignment</a></li>
+          <li><a href="scenes.html" class="nav-link">Phaser Scenes</a></li>
+          <li><a href="phaser-basics.html" class="nav-link">Phaser Basics</a></li>
+          <li><a href="phaser-cheatsheet.html" class="nav-link">Cheatsheet</a></li>
+          <li><a href="common-pitfalls.html" class="nav-link">Pitfalls</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="header">
+    <img src="./microscope.png" alt="microscope drawing">
+    <h1>Phaser Scene Management</h1>
+    <p>Understanding the scene system for organizing your Phaser games</p>
+  </div>
+
+  <div class="card">
+    <h2>What Are Scenes in Phaser?</h2>
+    <p>Scenes are the building blocks of Phaser games. They represent self-contained areas of your game, such as:</p>
+
+    <ul>
+      <li>Title screen or main menu</li>
+      <li>Game levels</li>
+      <li>Pause menu</li>
+      <li>Game over screen</li>
+      <li>High score display</li>
+    </ul>
+    <p>When you create a class that extends Phaser.Scene, you're using JavaScript's class inheritance to build your own
+      scene
+      that inherits all the functionality of Phaser's base Scene class. This is object-oriented programming in action -
+      your
+      custom scene automatically receives all the built-in methods and properties of Phaser.Scene (like preload(),
+      create(),
+      and update()), while allowing you to override these methods with your own implementations and add new methods
+      specific
+      to your game. The super('GameScene') call in the constructor is crucial as it passes your scene's unique
+      identifier to
+      the parent class, which Phaser uses to reference and manage your scene within its scene system.</p>
+    <p>Each scene has its own lifecycle, objects, and logic. Using scenes helps you organize your code and separate
+      different parts of your game into manageable modules.</p>
+
+    <div class="note">
+      <p><strong>Key Concept:</strong> Think of scenes like different "screens" or "states" of your game. Each scene can
+        be started, stopped, paused, or resumed independently of other scenes.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Scene Lifecycle Methods</h2>
+    <p>Every Phaser scene has several core methods that control its lifecycle:</p>
+
+    <div class="example-container">
+      <div class="example-header">
+        <h3>Core Scene Methods</h3>
+      </div>
+      <div class="example-content">
+        <ul>
+          <li><strong>constructor()</strong>: Set up the scene key and initial configuration</li>
+          <li><strong>init(data)</strong>: Called first, receives data passed from other scenes</li>
+          <li><strong>preload()</strong>: Used to load assets before the scene starts</li>
+          <li><strong>create()</strong>: Called once all assets are loaded, set up game objects here</li>
+          <li><strong>update(time, delta)</strong>: Called every frame, handle game logic here</li>
+        </ul>
+
+        <pre><code class="language-javascript">export default class GameScene extends Phaser.Scene {
+  constructor() {
+    super('GameScene'); // The key used to identify this scene
+  }
+
+  init(data) {
+    // Initialize scene variables
+    this.score = data.score || 0;
+    this.level = data.level || 1;
+  }
+
+  preload() {
+    // Load assets (images, sounds, etc.)
+    this.load.image('player', 'assets/player.png');
+    this.load.image('enemy', 'assets/enemy.png');
+    this.load.audio('jump', 'assets/jump.wav');
+  }
+
+  create() {
+    // Set up game objects, physics, collisions, etc.
+    this.player = this.physics.add.sprite(100, 300, 'player');
+    this.enemies = this.physics.add.group();
+    this.scoreText = this.add.text(16, 16, `Score: ${this.score}`, {
+      fontSize: '32px',
+      fill: '#fff'
+    });
+
+    // Set up input
+    this.cursors = this.input.keyboard.createCursorKeys();
+  }
+
+  update(time, delta) {
+    // Game logic that runs every frame
+    this.handlePlayerMovement();
+    this.checkGameOver();
+  }
+
+  // Custom methods for this scene
+  handlePlayerMovement() {
+    if (this.cursors.left.isDown) {
+      this.player.setVelocityX(-200);
+    } else if (this.cursors.right.isDown) {
+      this.player.setVelocityX(200);
+    } else {
+      this.player.setVelocityX(0);
+    }
+  }
+
+  checkGameOver() {
+    if (this.player.y > this.game.config.height) {
+      this.scene.start('GameOverScene', { score: this.score });
+    }
+  }
+}</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Creating and Using Multiple Scenes</h2>
+    <p>Most games use multiple scenes to organize different parts of the game. Here's how to set up a simple multi-scene
+      game:</p>
+
+    <div class="code-sample">
+      <h3>Step 1: Create separate scene files</h3>
+      <p>Create a separate JavaScript file for each scene:</p>
+
+      <pre><code class="language-javascript">// scenes/BootScene.js
+export default class BootScene extends Phaser.Scene {
+  constructor() {
+    super('BootScene');
+  }
+
+  preload() {
+    // Load minimal assets needed for the loading screen
+    this.load.image('logo', 'assets/logo.png');
+  }
+
+  create() {
+    // Display logo
+    this.add.image(400, 300, 'logo');
+
+    // Go to the loading scene after a short delay
+    this.time.delayedCall(1000, () => {
+      this.scene.start('PreloaderScene');
+    });
+  }
+}
+
+// scenes/PreloaderScene.js
+export default class PreloaderScene extends Phaser.Scene {
+  constructor() {
+    super('PreloaderScene');
+  }
+
+  preload() {
+    // Show loading progress
+    const progressBar = this.add.graphics();
+    const progressBox = this.add.graphics();
+    progressBox.fillStyle(0x222222, 0.8);
+    progressBox.fillRect(240, 270, 320, 50);
+
+    // Loading text
+    const loadingText = this.add.text(400, 250, 'Loading...', {
+      font: '20px monospace',
+      fill: '#ffffff'
+    }).setOrigin(0.5);
+
+    // Register progress events
+    this.load.on('progress', (value) => {
+      progressBar.clear();
+      progressBar.fillStyle(0xffffff, 1);
+      progressBar.fillRect(250, 280, 300 * value, 30);
+    });
+
+    // Load all game assets
+    this.load.image('player', 'assets/player.png');
+    this.load.image('enemy', 'assets/enemy.png');
+    // ... load more assets
+  }
+
+  create() {
+    // Go to the menu scene when loading is complete
+    this.scene.start('MenuScene');
+  }
+}</code></pre>
+    </div>
+
+    <div class="code-sample">
+      <h3>Step 2: Register scenes in your game configuration</h3>
+      <p>Import and register all your scenes in your main game file:</p>
+
+      <pre><code class="language-javascript">import Phaser from 'phaser';
+import BootScene from './scenes/BootScene';
+import PreloaderScene from './scenes/PreloaderScene';
+import MenuScene from './scenes/MenuScene';
+import GameScene from './scenes/GameScene';
+import GameOverScene from './scenes/GameOverScene';
+
+const config = {
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 300 },
+      debug: false
+    }
+  },
+  // Add all scenes in the order they should appear
+  scene: [
+    BootScene,
+    PreloaderScene,
+    MenuScene,
+    GameScene,
+    GameOverScene
+  ]
+};
+
+new Phaser.Game(config);</code></pre>
+    </div>
+
+    <div class="tip">
+      <p><strong>Order Matters:</strong> The first scene in the array will start automatically when the game loads.
+        Other scenes must be manually started.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Scene Management Methods</h2>
+    <p>Phaser provides several methods for managing scenes during gameplay:</p>
+
+    <div class="example-container">
+      <div class="example-header">
+        <h3>Starting and Stopping Scenes</h3>
+      </div>
+      <div class="example-content">
+        <pre><code class="language-javascript">// Start a new scene (stops the current scene)
+this.scene.start('GameScene');
+
+// Start a new scene and pass data to it
+this.scene.start('GameScene', { level: 2, score: 150 });
+
+// Stop the current scene (removes it from processing)
+this.scene.stop();
+
+// Stop a specific scene
+this.scene.stop('UIScene');</code></pre>
+      </div>
+    </div>
+
+    <div class="example-container">
+      <div class="example-header">
+        <h3>Running Multiple Scenes Simultaneously</h3>
+      </div>
+      <div class="example-content">
+        <pre><code class="language-javascript">// Launch a scene in parallel (current scene keeps running)
+this.scene.launch('UIScene');
+
+// Pause a scene (the scene's update method stops being called)
+this.scene.pause('GameScene');
+
+// Resume a paused scene
+this.scene.resume('GameScene');
+
+// Pause all scenes except this one
+this.scene.manager.pauseScenes();</code></pre>
+
+        <div class="note">
+          <p><strong>Common Use Case:</strong> Run your main game scene and UI scene simultaneously. When the player
+            pauses the game, launch a pause menu scene while pausing the main game scene.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="example-container">
+      <div class="example-header">
+        <h3>Scene Communication</h3>
+      </div>
+      <div class="example-content">
+        <pre><code class="language-javascript">// Passing data when starting a scene
+this.scene.start('GameOverScene', {
+  score: this.score,
+  timeElapsed: this.timeElapsed,
+  enemiesDefeated: this.enemiesDefeated
+});
+
+// In the receiving scene's init method
+init(data) {
+  this.finalScore = data.score || 0;
+  this.finalTime = data.timeElapsed || 0;
+  this.enemyCount = data.enemiesDefeated || 0;
+}
+
+// Getting a reference to another scene
+const uiScene = this.scene.get('UIScene');
+uiScene.updateScore(this.score);
+
+// Using events for scene communication
+// In GameScene:
+this.events.emit('score-changed', this.score);
+
+// In UIScene:
+// Listen for events from other scenes
+otherScene.events.on('score-changed', (score) => {
+  this.scoreText.setText(`Score: ${score}`);
+});</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Advanced Scene Techniques</h2>
+
+    <div class="example-container">
+      <div class="example-header">
+        <h3>Scene Transitions</h3>
+      </div>
+      <div class="example-content">
+        <p>You can create visual transitions between scenes using tweens and the scene transition methods:</p>
+
+        <pre><code class="language-javascript">// Fade out to black then start the next scene
+this.cameras.main.fadeOut(1000, 0, 0, 0);
+this.cameras.main.once(Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE, () => {
+  this.scene.start('NextScene');
+});
+
+// In the target scene's create method, fade in
+create() {
+  // Set up scene first
+  this.setupLevel();
+
+  // Then fade in
+  this.cameras.main.fadeIn(1000, 0, 0, 0);
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="example-container">
+      <div class="example-header">
+        <h3>Scene Manager Configuration</h3>
+      </div>
+      <div class="example-content">
+        <p>You can configure scenes when they are added:</p>
+
+        <pre><code class="language-javascript">// Add a scene at runtime
+this.scene.add('BonusLevel', BonusLevelScene, false, { lives: this.lives });
+
+// Start the scene with configuration
+this.scene.start('GameScene', { level: 3 });
+
+// Launch multiple scenes with structured data
+this.scene.launch('UIScene', {
+  showTimer: true,
+  initialTime: 60
+});</code></pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Scene Best Practices</h2>
+    <ul>
+      <li><strong>Single Responsibility:</strong> Each scene should handle one specific part of your game (loading,
+        menu, gameplay, etc.)</li>
+      <li><strong>Asset Management:</strong> Load assets in a dedicated preloader scene to avoid loading the same assets
+        multiple times</li>
+      <li><strong>Data Persistence:</strong> Use a data management system or registry to share data between scenes</li>
+      <li><strong>Scene Communication:</strong> Use events for loose coupling between scenes</li>
+      <li><strong>Scene Reuse:</strong> Create reusable scenes for common functionality (e.g., a pause menu, level
+        selection)</li>
+    </ul>
+
+    <div class="warning">
+      <p><strong>Common Pitfall:</strong> Avoid creating too many dependencies between scenes. If one scene needs to
+        know too much about another scene, consider refactoring your code to use a shared data manager or event system.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Scene Template</h2>
+    <p>Use this template as a starting point for new scenes:</p>
+
+    <pre><code class="language-javascript">export default class YourScene extends Phaser.Scene {
+  constructor() {
+    super('YourSceneKey');
+  }
+
+  init(data) {
+    // Initialize properties from data passed from other scenes
+    this.level = data.level || 1;
+    // More initialization...
+  }
+
+  preload() {
+    // Load assets specific to this scene
+    // If using a preloader scene, this might be empty
+  }
+
+  create() {
+    // Create game objects, set up physics, animations, etc.
+    this.createBackground();
+    this.createPlayer();
+    this.createEnemies();
+    this.createCollisions();
+    this.createUI();
+    this.setupInput();
+  }
+
+  update(time, delta) {
+    // Game logic that runs every frame
+    this.updatePlayer(delta);
+    this.updateEnemies(delta);
+    this.checkWinCondition();
+  }
+
+  // Custom methods
+  createBackground() {
+    // Implementation...
+  }
+
+  createPlayer() {
+    // Implementation...
+  }
+
+  // More methods...
+
+  // Scene transition methods
+  goToNextLevel() {
+    this.scene.start('YourSceneKey', { level: this.level + 1 });
+  }
+
+  gameOver() {
+    this.scene.start('GameOverScene', { score: this.score });
+  }
+}</code></pre>
+  </div>
+</body>
+
+</html>

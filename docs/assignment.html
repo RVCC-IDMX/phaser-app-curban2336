@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello Phaser Assignment</title>
+  <link rel="shortcut icon" href="./microscope.png" type="image/png">
+  <link rel="stylesheet" href="header.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <nav class="site-nav">
+        <div class="logo">
+          <a href="index.html">
+            <img src="./microscope.png" alt="microscope drawing" class="logo-img">
+            <span>Hello Phaser</span>
+          </a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="assignment.html" class="nav-link">Assignment</a></li>
+          <li><a href="scenes.html" class="nav-link">Phaser Scenes</a></li>
+          <li><a href="phaser-basics.html" class="nav-link">Phaser Basics</a></li>
+          <li><a href="phaser-cheatsheet.html" class="nav-link">Cheatsheet</a></li>
+          <li><a href="common-pitfalls.html" class="nav-link">Pitfalls</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="header">
+    <img src="./microscope.png" alt="microscope drawing">
+    <h1>Hello Phaser Assignment</h1>
+    <p>Building your first interactive game with Phaser 3</p>
+  </section>
+
+  <article class="card">
+    <h2>Overview</h2>
+    <p>In this assignment, you'll build a simple interactive game using Phaser 3, a popular JavaScript game framework.
+      You'll learn how to set up a game canvas, load assets, create game objects, add interactivity, and manage game
+      state.</p>
+    <p>The starter code provides the project structure and configuration, but you'll need to create all the JavaScript
+      files and implement the game logic yourself.</p>
+    <p>By the end of this assignment, you'll have a simple game where users can click on a logo to increase their score,
+      with visual and audio feedback.</p>
+  </article>
+
+  <article class="card">
+    <h2>Getting Started</h2>
+    <h3>Step 1: Clone the Repository</h3>
+
+    <h3>Step 2: Install Dependencies</h3>
+    <p>Install the project dependencies using npm:</p>
+    <pre><code>npm install</code></pre>
+    <p>This will install Phaser and other necessary packages defined in the package.json file.</p>
+
+    <h3>Step 3: Explore the Project Structure</h3>
+    <p>The starter repository has the following structure:</p>
+    <pre><code>project-root/
+├── public/
+│   └── assets/
+│       ├── images/
+│       │   └── phaser-logo-200x150.png
+│       └── sounds/
+│           └── mixkit-sci-fi-click-900.wav
+├── src/             (You'll create files here)
+│   └── scenes/      (You'll create scene files here)
+├── index.html       (Main HTML file)
+├── package.json     (Project dependencies)
+├── vite.config.mjs  (Vite configuration)
+└── netlify.toml     (Netlify deployment config)</code></pre>
+    <p>You'll need to create the following files yourself:</p>
+    <ul>
+      <li><code>src/main.js</code> - The entry point that sets up the Phaser game configuration</li>
+      <li><code>src/scenes/MainScene.js</code> - The main game scene class that will contain your game logic</li>
+    </ul>
+
+    <h3>Step 4: Start the Development Server</h3>
+    <p>Start the Vite development server:</p>
+    <pre><code>npm run dev</code></pre>
+    <p>This will launch a local development server at <code>http://localhost:3000</code>.</p>
+    <p>Open dev tools to the console. You'll see an error at first since you haven't created any JavaScript files yet.
+    </p>
+  </article>
+
+  <article class="card">
+    <h2>Step 1: Creating the Game Entry Point</h2>
+    <p>First, you'll need to create the main entry point for your game.</p>
+
+    <h3>1.1: Create the main.js File</h3>
+    <p>Create a file at <code>src/main.js</code> with the following content:</p>
+    <pre><code>// Import Phaser from node_modules
+import Phaser from 'phaser';
+
+// Game configuration
+const config = {
+  // Type can be Phaser.AUTO, Phaser.CANVAS, or Phaser.WEBGL
+  // AUTO lets Phaser choose the best renderer for the device
+  type: Phaser.AUTO,
+
+  // Game canvas width and height
+  width: 800,
+  height: 600,
+
+  // Background color of the game canvas (RGB format)
+  backgroundColor: '#2d2d2d',
+
+  // DOM element ID to place the game canvas in
+  parent: 'game-container',
+
+  // Scale manager configuration
+  scale: {
+    // Center the game canvas both horizontally and vertically
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+
+    // Scale mode - can be NONE, FIT, RESIZE, etc.
+    mode: Phaser.Scale.FIT
+  },
+
+  // Physics configuration
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 0 }, // No gravity by default (top-down game)
+      debug: true        // Set to false in production to hide physics debug info
+    }
+  },
+
+  // Pixel art settings (prevents blurring of pixel art when scaled)
+  pixelArt: true,
+
+  // Anti-aliasing (set to false for crisp pixel art)
+  antialias: false,
+
+  // Scene(s) to include - we'll add scenes later
+  scene: []
+}
+
+// Create the game instance (with empty scene array for now)
+new Phaser.Game(config);</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>import Phaser from 'phaser';</code> - Imports the Phaser library from node_modules</li>
+      <li><code>type: Phaser.AUTO</code> - Lets Phaser choose the best renderer (WebGL or Canvas) for the device</li>
+      <li><code>width, height</code> - Sets the game canvas dimensions to 800x600 pixels</li>
+      <li><code>backgroundColor</code> - Sets a dark gray background color for the canvas</li>
+      <li><code>parent: 'game-container'</code> - ID of the HTML element where the game canvas will be placed</li>
+      <li><code>scale</code> - Configures how the game scales when the browser window changes size</li>
+      <li><code>physics</code> - Sets up the physics engine with no gravity (suitable for top-down games)</li>
+      <li><code>pixelArt: true, antialias: false</code> - Settings for displaying crisp pixel art graphics</li>
+      <li><code>scene: []</code> - An empty array that will hold our game scenes (added later)</li>
+      <li><code>new Phaser.Game(config);</code> - Creates the game instance with our configuration</li>
+    </ul>
+
+    <h3>1.2: Testing Your Progress</h3>
+    <p>Save the file and check your browser. You should see a dark gray canvas displayed on your page. This confirms
+      that your basic Phaser setup is working.</p>
+    <p>If you don't see the canvas:</p>
+    <ul>
+      <li>Check the browser console for errors (F12 or right-click > Inspect > Console)</li>
+      <li>Verify that your index.html includes an element with id="game-container"</li>
+      <li>Make sure your index.html includes a reference to your main.js file</li>
+    </ul>
+  </article>
+
+  <article class="card">
+    <h2>Step 2: Creating Your First Scene</h2>
+    <p>Now, let's create a scene where your game logic will live.</p>
+
+    <h3>2.1: Create the MainScene.js File</h3>
+    <p>Create a file at <code>src/scenes/MainScene.js</code> with this content:</p>
+    <pre><code>import Phaser from 'phaser';
+
+/**
+ * MainScene - The primary scene for our game
+ * This class handles all the main game logic, rendering, and interactions
+ */
+export default class MainScene extends Phaser.Scene {
+  constructor() {
+    // Scene key - used to start or reference this scene
+    super('MainScene');
+
+    // Initialize any properties here
+    this.score = 0;
+  }
+
+  /**
+   * Preload - Called before the scene is created
+   * Use this to load assets (images, sounds, etc.)
+   */
+  preload() {
+    // We'll add code here to load assets
+  }
+
+  /**
+   * Create - Called once after preload is complete
+   * Use this to create game objects and set up the scene
+   */
+  create() {
+    // We'll add code here to set up our game objects
+  }
+
+  /**
+   * Update - Called every frame
+   * Use this for gameplay logic, movement, etc.
+   * @param {number} time - Current time
+   * @param {number} delta - Time since last frame
+   */
+  update(time, delta) {
+    // We'll add code here for frame-by-frame logic
+  }
+}</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>export default class MainScene extends Phaser.Scene</code> - Creates a scene class that inherits from
+        Phaser.Scene</li>
+      <li><code>super('MainScene')</code> - Assigns a unique key to identify this scene in your game</li>
+      <li><code>this.score = 0</code> - Initializes a score property that we'll use to track the player's score</li>
+      <li><code>preload()</code> - Method that runs before the scene starts, used to load assets</li>
+      <li><code>create()</code> - Method that runs once the scene starts, used to set up game objects</li>
+      <li><code>update(time, delta)</code> - Method that runs every frame, used for ongoing game logic</li>
+    </ul>
+
+    <h3>2.2: Update the create() Method</h3>
+    <p>Let's add a minimal implementation to see if your scene works. Update the <code>create()</code> method:</p>
+    <pre><code>create() {
+  // Add a simple text to verify the scene is working
+  this.add.text(400, 300, 'Hello from MainScene!', {
+    font: '24px Arial',
+    fill: '#ffffff'
+  }).setOrigin(0.5);
+}</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>this.add.text()</code> - Creates a text object at position (400, 300) with specified formatting</li>
+      <li><code>setOrigin(0.5)</code> - Centers the text at its position coordinates</li>
+    </ul>
+  </article>
+
+  <article class="card">
+    <h2>Step 3: Connecting the Scene to the Game</h2>
+    <p>Now, update your <code>main.js</code> file to import and use the MainScene.</p>
+
+    <h3>3.1: Update main.js to Use the Scene</h3>
+    <p>In your <code>src/main.js</code> file, <strong>add these NEW and CHANGED updates</strong>:</p>
+    <pre><code>// Import Phaser from node_modules
+import Phaser from 'phaser';
+
+// Import our scene
+import MainScene from './scenes/MainScene';  // NEW: Import the MainScene
+
+// Game configuration
+const config = {
+  // Rest of configuration remains the same...
+
+  // Scene(s) to include
+  scene: [MainScene]  // CHANGED: Now includes MainScene
+}
+
+// Create the game instance
+new Phaser.Game(config);</code></pre>
+
+    <p><strong>What changed:</strong></p>
+    <ul>
+      <li>Added an import statement for the MainScene class</li>
+      <li>Updated the <code>scene</code> array to include MainScene</li>
+    </ul>
+
+    <h3>3.2: Testing Your Connected Scene</h3>
+    <p>Save both files and check your browser. The development server should automatically reload the page, and you
+      should now see your "Hello from MainScene!" text in the center of the game canvas.</p>
+    <p>If you don't see the text:</p>
+    <ul>
+      <li>Check the browser console for errors</li>
+      <li>Verify that your import path is correct (it should match your directory structure)</li>
+      <li>Make sure you've correctly set up the <code>scene</code> array in your config</li>
+    </ul>
+  </article>
+
+  <article class="card">
+    <h2>Step 4: Loading Game Assets</h2>
+    <p>Now let's modify the <code>preload()</code> method in your MainScene to load the game assets.</p>
+
+    <h3>4.1: Update the preload() Method</h3>
+    <p>In your <code>src/scenes/MainScene.js</code> file, update the <code>preload()</code> method:</p>
+    <pre><code>preload() {
+  // Load the Phaser logo image
+  this.load.image('logo', 'assets/images/phaser-logo-200x150.png');
+
+  // Load a sound effect for clicking
+  this.load.audio('click', 'assets/sounds/mixkit-sci-fi-click-900.wav');
+}</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>this.load.image()</code> - Loads an image file with the key 'logo' that we can reference later</li>
+      <li><code>this.load.audio()</code> - Loads a sound file with the key 'click' that we can play later</li>
+      <li>The first parameter is a key/name to reference the asset, the second is the file path</li>
+      <li>The paths are relative to your public directory</li>
+    </ul>
+
+    <h3>4.2: Testing Asset Loading</h3>
+    <p>Let's update the <code>create()</code> method to verify that assets are loading correctly:</p>
+    <pre><code>create() {
+  // Add a simple text
+  this.add.text(400, 150, 'Asset Loading Test', {
+    font: '24px Arial',
+    fill: '#ffffff'
+  }).setOrigin(0.5);
+
+  // Display the logo to verify image loading
+  const logo = this.add.image(400, 300, 'logo');
+
+  // Test sound loading by playing it once
+  this.sound.play('click');
+}</code></pre>
+
+    <p><strong>What changed:</strong></p>
+    <ul>
+      <li>Added a heading text to label our test</li>
+      <li>Displayed the Phaser logo using the <code>this.add.image()</code> method with the key 'logo'</li>
+      <li>Played the click sound once to verify it loaded properly</li>
+    </ul>
+
+    <p>Save your changes and check the browser. You should see:</p>
+    <ul>
+      <li>The "Asset Loading Test" text</li>
+      <li>The Phaser logo displayed</li>
+      <li>A click sound playing when the scene loads (You may first have to click in the window to hear
+        the sound)</li>
+    </ul>
+
+    <p>If assets aren't loading, check:</p>
+    <ul>
+      <li>That the asset paths are correct</li>
+      <li>The browser console for specific error messages</li>
+      <li>That your browser allows sound playback</li>
+    </ul>
+  </article>
+
+  <article class="card">
+    <h2>Step 5: Setting Up the Game Scene</h2>
+    <p>Now, let's implement a more complete <code>create()</code> method to set up your game scene with text and
+      visuals.</p>
+
+    <h3>5.1: Update the create() Method</h3>
+    <p>Replace your test code in the <code>create()</code> method with a more complete scene setup:</p>
+    <pre><code>create() {
+  // Add a title
+  this.add.text(400, 100, 'Hello Phaser!', {
+    font: '64px Arial',
+    fill: '#ffffff'
+  }).setOrigin(0.5);
+
+  // Add background details or instructions
+  this.add.text(400, 180, 'My First Phaser Game', {
+    font: '24px Arial',
+    fill: '#ffffff'
+  }).setOrigin(0.5);
+
+  // Add the Phaser logo image to the center of the screen
+  const logo = this.add.image(400, 300, 'logo');
+
+  // Add a score display
+  this.scoreText = this.add.text(16, 16, 'Score: 0', {
+    font: '32px Arial',
+    fill: '#ffffff'
+  });
+
+  // Add instructions
+  this.add.text(400, 500, 'Click the logo to increase your score!', {
+    font: '18px Arial',
+    fill: '#ffffff'
+  }).setOrigin(0.5);
+}</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>this.add.text(400, 100, 'Hello Phaser!', ...)</code> - Creates a title at the top of the screen</li>
+      <li><code>this.add.text(400, 180, 'My First Phaser Game', ...)</code> - Adds a subtitle</li>
+      <li><code>const logo = this.add.image(400, 300, 'logo')</code> - Displays the Phaser logo at the center</li>
+      <li><code>this.scoreText = this.add.text(...)</code> - Creates a text object and saves a reference to it</li>
+      <li><code>setOrigin(0.5)</code> - Centers elements on their coordinate position</li>
+      <li>Text without <code>setOrigin()</code> is positioned by its top-left corner</li>
+    </ul>
+
+    <h3>5.2: Testing Your Game Scene</h3>
+    <p>Save your changes and check the browser. You should now see:</p>
+    <ul>
+      <li>The "Hello Phaser!" title at the top</li>
+      <li>The "My First Phaser Game" subtitle</li>
+      <li>The Phaser logo in the center</li>
+      <li>A "Score: 0" display in the top-left corner</li>
+      <li>Instructions at the bottom</li>
+    </ul>
+  </article>
+
+  <article class="card">
+    <h2>Step 6: Adding Interactivity</h2>
+    <p>Now let's add interactivity to your game by implementing click events and score tracking.</p>
+
+    <h3>6.1: Making the Logo Interactive</h3>
+    <p>Update your <code>create()</code> method to make the logo interactive. Add this code after creating the logo:</p>
+    <pre><code>// Make the logo interactive
+logo.setInteractive();</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>setInteractive()</code> - Enables the logo to receive input events like clicks and hovers</li>
+    </ul>
+
+    <h3>6.2: Adding Click Functionality</h3>
+    <p>Now add a click handler to the logo that increases the score and plays a sound:</p>
+    <pre><code>// Add click handler
+logo.on('pointerdown', () => {
+  console.log('Logo clicked!');
+
+  // Play sound when clicked
+  this.sound.play('click');
+
+  // Update score
+  this.score += 10;
+  this.scoreText.setText(`Score: ${this.score}`);
+});</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>logo.on('pointerdown', ...)</code> - Adds an event listener for mouse/touch clicks</li>
+      <li><code>this.sound.play('click')</code> - Plays the click sound we loaded earlier</li>
+      <li><code>this.score += 10</code> - Increases the score by 10 points</li>
+      <li><code>this.scoreText.setText(...)</code> - Updates the score display with the new value</li>
+    </ul>
+
+    <h3>6.3: Adding Hover Effects</h3>
+    <p>Add visual feedback for when players hover over the logo:</p>
+    <pre><code>// Add hover effects
+logo.on('pointerover', () => {
+  logo.setScale(1.1);  // Make logo slightly bigger on hover
+});
+
+logo.on('pointerout', () => {
+  logo.setScale(1.0);  // Return to normal size when not hovering
+});</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>logo.on('pointerover', ...)</code> - Adds an event listener for mouse hover start</li>
+      <li><code>logo.on('pointerout', ...)</code> - Adds an event listener for mouse hover end</li>
+      <li><code>logo.setScale(1.1)</code> - Makes the logo 10% larger when hovered</li>
+      <li><code>logo.setScale(1.0)</code> - Returns the logo to normal size when hover ends</li>
+    </ul>
+
+    <h3>6.4: Testing Interactivity</h3>
+    <p>Save your changes and test in the browser:</p>
+    <ul>
+      <li>Hover over the logo - it should scale up slightly</li>
+      <li>Move away from the logo - it should return to normal size</li>
+      <li>Click the logo - you should hear the click sound and see the score increase by 10</li>
+      <li>Click it multiple times - the score should continue to increase</li>
+    </ul>
+
+    <p>Your complete <code>create()</code> method should now look like this:</p>
+    <pre><code>create() {
+  // Add a title
+  this.add.text(400, 100, 'Hello Phaser!', {
+    font: '64px Arial',
+    fill: '#ffffff'
+  }).setOrigin(0.5);
+
+  // Add background details or instructions
+  this.add.text(400, 180, 'My First Phaser Game', {
+    font: '24px Arial',
+    fill: '#ffffff'
+  }).setOrigin(0.5);
+
+  // Add the Phaser logo image to the center of the screen
+  const logo = this.add.image(400, 300, 'logo');
+
+  // Make the logo interactive
+  logo.setInteractive();
+
+  // Add click handler
+  logo.on('pointerdown', () => {
+    console.log('Logo clicked!');
+
+    // Play sound when clicked
+    this.sound.play('click');
+
+    // Update score
+    this.score += 10;
+    this.scoreText.setText(`Score: ${this.score}`);
+  });
+
+  // Add hover effects
+  logo.on('pointerover', () => {
+    logo.setScale(1.1);  // Make logo slightly bigger on hover
+  });
+
+  logo.on('pointerout', () => {
+    logo.setScale(1.0);  // Return to normal size when not hovering
+  });
+
+  // Add a score display
+  this.scoreText = this.add.text(16, 16, 'Score: 0', {
+    font: '32px Arial',
+    fill: '#ffffff'
+  });
+
+  // Add instructions
+  this.add.text(400, 500, 'Click the logo to increase your score!', {
+    font: '18px Arial',
+    fill: '#ffffff'
+  }).setOrigin(0.5);
+}</code></pre>
+  </article>
+
+  <article class="card">
+    <h2>Step 7: Implementing the Game Loop</h2>
+    <p>The <code>update()</code> method runs every frame and is where you handle ongoing game logic.</p>
+
+    <h3>7.1: Create a Basic Update Method</h3>
+    <p>In your <code>src/scenes/MainScene.js</code> file, update the <code>update()</code> method:</p>
+    <pre><code>// eslint-disable-next-line no-unused-vars
+  update(time, delta) {
+  // The time parameter is the total elapsed time in milliseconds
+  // The delta parameter is the time elapsed since the last frame
+
+  // This is where you'd put code that needs to run every frame
+  // For example, checking for collisions, movement, etc.
+
+  // For now, we'll leave it empty or add basic debugging
+  // console.log('Update called', time, delta);
+}</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>// eslint-disable-next-line no-unused-vars</code> - Eslint will ignore the very next line for the
+        specific rule no-unused-vars</li>
+      <li><code>time</code> - The total elapsed time in milliseconds since the game started</li>
+      <li><code>delta</code> - The time in milliseconds since the last frame</li>
+      <li>For this simple game, we don't need to add any ongoing logic to the <code>update()</code> method</li>
+      <li>In more complex games, you would use this method for movement, collisions, and other frame-by-frame logic</li>
+    </ul>
+
+    <h3>7.2: Testing the Complete Game</h3>
+    <p>Your game should now be fully functional! Test it in the browser and ensure everything works:</p>
+    <ul>
+      <li>The title, subtitle, and logo are displayed</li>
+      <li>The score counter starts at 0</li>
+      <li>Hovering over the logo makes it grow slightly</li>
+      <li>Clicking the logo plays a sound and increases the score</li>
+    </ul>
+
+    <p>If everything works correctly, congratulations! You've built a simple interactive game with Phaser 3.</p>
+  </article>
+
+  <article class="card">
+    <h2>Step 8: Extending Your Game (At Least 2)</h2>
+    <p>Now that you have a basic game working, try to extend it with your own features. Choose at least two from the
+      following:</p>
+
+    <h3>Extension Ideas:</h3>
+    <ul>
+      <li><strong>Visual Customization</strong>: Change the colors, fonts, or replace the Phaser logo with your own
+        image</li>
+      <li><strong>Gameplay Mechanics</strong>: Add a timer or countdown to create urgency</li>
+      <li><strong>Animation</strong>: Add simple animations to the logo (rotation, bouncing, etc.)</li>
+      <li><strong>Multiple Objects</strong>: Add more clickable objects with different point values</li>
+      <li><strong>Difficulty Progression</strong>: Make objects move faster or become smaller as the score increases
+      </li>
+      <li><strong>Sound Effects</strong>: Add different sounds for different actions</li>
+    </ul>
+
+    <p>Here are two code snippet suggestions to help you implement some of these extensions:</p>
+
+    <h4>Adding Simple Animation:</h4>
+    <pre><code>// In your create() method
+this.tweens.add({
+  targets: logo,
+  y: 320,
+  duration: 1500,
+  ease: 'Sine.inOut',
+  yoyo: true,
+  repeat: -1
+});</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>this.tweens.add()</code> - Creates an animation using Phaser's tween system</li>
+      <li><code>targets: logo</code> - Specifies which object to animate</li>
+      <li><code>y: 320</code> - The target y position (20 pixels down from the original position)</li>
+      <li><code>duration: 1500</code> - Animation takes 1.5 seconds to complete</li>
+      <li><code>ease: 'Sine.inOut'</code> - Uses a sinusoidal easing for smooth movement</li>
+      <li><code>yoyo: true</code> - Animation reverses back to the starting position</li>
+      <li><code>repeat: -1</code> - Animation loops indefinitely</li>
+    </ul>
+
+    <h4>Adding a Timer:</h4>
+    <pre><code>// In your create() method
+this.timeLeft = 30; // 30 seconds
+this.timeText = this.add.text(16, 60, 'Time: 30', {
+  font: '32px Arial',
+  fill: '#ffffff'
+});
+
+// Create a timer event
+this.time.addEvent({
+  delay: 1000, // 1000ms = 1 second
+  callback: this.updateTimer,
+  callbackScope: this,
+  loop: true
+});
+
+// Add this method to your class
+updateTimer() {
+  this.timeLeft--;
+  this.timeText.setText(`Time: ${this.timeLeft}`);
+
+  if (this.timeLeft <= 0) {
+    // Game over logic
+    this.add.text(400, 300, 'GAME OVER', {
+      font: '64px Arial',
+      fill: '#ff0000'
+    }).setOrigin(0.5);
+
+    // Stop the timer
+    this.time.removeAllEvents();
+  }
+}</code></pre>
+
+    <p><strong>Study this code:</strong></p>
+    <ul>
+      <li><code>this.timeLeft = 30</code> - Sets up a 30-second timer</li>
+      <li><code>this.timeText</code> - Creates a text display for the timer</li>
+      <li><code>this.time.addEvent()</code> - Creates a repeating timer event</li>
+      <li><code>delay: 1000</code> - Event triggers every 1 second</li>
+      <li><code>callback: this.updateTimer</code> - Calls the updateTimer method each time</li>
+      <li><code>updateTimer()</code> - A custom method that decrements the timer and checks for game over</li>
+    </ul>
+
+    <p><strong>Implement at least two extensions and document what you've added in your code comments. You are allowed
+        to remove the logo hover effect if it competes with your extension.</strong></p>
+  </article>
+
+  <article class="card">
+    <h2>Step 9: Building and Deploying Your Game</h2>
+    <p>Once you're happy with your game, it's time to build and deploy it to Netlify.</p>
+
+    <h3>9.1: Building Your Game for Production</h3>
+    <p>First, build your game for production to create optimized files:</p>
+    <pre><code>npm run build</code></pre>
+
+    <p>This command will:</p>
+    <ul>
+      <li>Bundle and minify your JavaScript files</li>
+      <li>Optimize your assets</li>
+      <li>Create a <code>dist/</code> directory with the production-ready files</li>
+    </ul>
+
+    <h3>9.2: Testing the Production Build</h3>
+    <p>Before deploying, test your production build locally:</p>
+    <pre><code>npm run preview</code></pre>
+    <p>This will serve your built application locally. Verify that everything works correctly in the production build,
+      including:</p>
+    <ul>
+      <li>All visuals appear as expected</li>
+      <li>Score tracking works properly</li>
+      <li>Sounds play correctly</li>
+      <li>Any extensions you've added function properly</li>
+    </ul>
+
+    <h3>9.3: Deploying to Netlify</h3>
+    <p>Follow these steps to deploy your game to Netlify:</p>
+    <ol>
+      <li>Go to <a href="https://www.netlify.com/">Netlify</a> and sign in (or create an account)</li>
+      <li>Click on "New site from Git"</li>
+      <li>Choose GitHub as your provider and authorize Netlify</li>
+      <li>Select your repository from the list</li>
+      <li>The build settings should be automatically configured by the <code>netlify.toml</code> file that's included in
+        your starter repo:
+        <ul>
+          <li>Build command: <code>npm run build</code></li>
+          <li>Publish directory: <code>dist</code></li>
+        </ul>
+      </li>
+      <li>Click "Deploy site"</li>
+    </ol>
+    <p>Netlify will deploy your site and provide you with a URL where your game is accessible online.</p>
+
+    <h3>9.4: Sharing Your Game</h3>
+    <p>Once deployed, you can share your game with others by sending them the Netlify URL. Your "Hello Phaser" game is
+      now live on the web!</p>
+  </article>
+
+  <article class="card">
+    <h2>Step 10: Submission</h2>
+    <p>To complete this assignment, submit the following:</p>
+
+    <h3>10.1: Repository and Deployment URLs</h3>
+    <ul>
+      <li><strong>GitHub Repository URL:</strong> The link to your project's GitHub repository</li>
+      <li><strong>Netlify Deployment URL:</strong> The link to your live game on Netlify</li>
+    </ul>
+
+    <h3>10.2: Game Extensions</h3>
+    <p>Include a brief description (1-2 paragraphs) of the extensions you added to your game and why you chose them.</p>
+
+    <h3>10.3: Code Quality</h3>
+    <p>Ensure your code meets these quality standards before submission:</p>
+    <ul>
+      <li><strong>Comments:</strong> All methods and complex code blocks have descriptive comments</li>
+      <li><strong>Organization:</strong> Code is logically organized with clear structure</li>
+      <li><strong>Naming:</strong> Variables and functions have clear, descriptive names</li>
+      <li><strong>Functionality:</strong> All features work as expected without errors</li>
+    </ul>
+  </article>
+</body>
+
+</html>

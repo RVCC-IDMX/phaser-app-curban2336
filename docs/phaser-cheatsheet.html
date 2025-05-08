@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phaser 3 Quick Reference</title>
+  <link rel="shortcut icon" href="./microscope.png" type="image/png">
+  <!-- Prism.js Core -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js" defer></script>
+  <!-- Prism.js Toolbar -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.js" defer></script>
+  <!-- Prism.js Copy to Clipboard -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"
+    defer></script>
+  <!-- Prism.js Theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-material-light.min.css">
+  <link rel="stylesheet" href="header.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    h1,
+    h2 {
+      color: #0056b3;
+    }
+
+    .section {
+      margin-bottom: 30px;
+    }
+
+    code {
+      background: #f5f5f5;
+      padding: 2px 4px;
+      border-radius: 3px;
+    }
+
+    pre {
+      background: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+      border-left: 4px solid #28a745;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <nav class="site-nav">
+        <div class="logo">
+          <a href="index.html">
+            <img src="./microscope.png" alt="microscope drawing" class="logo-img">
+            <span>Phaser.js Game Development</span>
+          </a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="assignment.html" class="nav-link">Assignment</a></li>
+          <li><a href="scenes.html" class="nav-link">Phaser Scenes</a></li>
+          <li><a href="phaser-basics.html" class="nav-link">Phaser Basics</a></li>
+          <li><a href="phaser-cheatsheet.html" class="nav-link">Cheatsheet</a></li>
+          <li><a href="common-pitfalls.html" class="nav-link">Pitfalls</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="header">
+    <img src="./microscope.png" alt="microscope drawing">
+    <h1>Phaser 3 Quick Reference</h1>
+    <p>A handy reference of common Phaser 3 code patterns</p>
+  </div>
+
+  <div class="card">
+    <h2>Game Setup</h2>
+    <pre><code class="language-javascript">import Phaser from 'phaser';
+import MainScene from './scenes/MainScene';
+
+const config = {
+  parent: 'game-container',
+  type: Phaser.AUTO,
+  width: 800,
+  height: 600,
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 0 },
+      debug: true  // Set to false for production
+    }
+  },
+  scene: [MainScene]
+};
+
+new Phaser.Game(config);</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Basic Scene Structure</h2>
+    <pre><code class="language-javascript">export default class MainScene extends Phaser.Scene {
+  constructor() {
+    super('MainScene');
+  }
+
+  preload() {
+    // Load assets here
+    this.load.image('key', 'path/to/image.png');
+    this.load.spritesheet('character', 'path/to/spritesheet.png', {
+      frameWidth: 64, frameHeight: 64
+    });
+  }
+
+  create() {
+    // Create game objects
+    this.add.image(400, 300, 'key');
+    this.player = this.physics.add.sprite(100, 100, 'character');
+  }
+
+  update() {
+    // Game loop logic (runs every frame)
+  }
+}</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Sprite Animation</h2>
+    <pre><code class="language-javascript">// In create() method:
+this.anims.create({
+  key: 'walk',
+  frames: this.anims.generateFrameNumbers('character', {
+    start: 0, end: 3
+  }),
+  frameRate: 10,
+  repeat: -1  // -1 means loop forever
+});
+
+// Play animation
+this.player.anims.play('walk', true);
+
+// Stop animation
+this.player.anims.stop();</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Input Handling</h2>
+    <pre><code class="language-javascript">// In create() method:
+this.cursors = this.input.keyboard.createCursorKeys();
+
+// In update() method:
+if (this.cursors.left.isDown) {
+  this.player.setVelocityX(-160);
+  this.player.anims.play('walk', true);
+} else if (this.cursors.right.isDown) {
+  this.player.setVelocityX(160);
+  this.player.anims.play('walk', true);
+} else {
+  this.player.setVelocityX(0);
+  this.player.anims.play('idle', true);
+}
+
+// Mouse/touch input
+this.input.on('pointerdown', (pointer) => {
+  console.log(`Clicked at: ${pointer.x}, ${pointer.y}`);
+});</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Physics & Collision</h2>
+    <pre><code class="language-javascript">// Enable physics on an existing sprite
+this.physics.world.enable(this.player);
+
+// Create static objects
+this.platforms = this.physics.add.staticGroup();
+this.platforms.create(400, 568, 'ground');
+
+// Add collision between objects
+this.physics.add.collider(this.player, this.platforms);
+
+// Collision callback
+this.physics.add.overlap(this.player, this.coins, this.collectCoin, null, this);
+
+collectCoin(player, coin) {
+  coin.disableBody(true, true);
+  this.score += 10;
+}</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Text & UI</h2>
+    <pre><code class="language-javascript">// Add text
+this.scoreText = this.add.text(16, 16, 'Score: 0', {
+  fontSize: '32px',
+  fill: '#000'
+});
+
+// Update text
+this.scoreText.setText(`Score: ${this.score}`);
+
+// Centered text
+this.add.text(400, 300, 'Game Over', {
+  fontSize: '64px',
+  fill: '#fff'
+}).setOrigin(0.5);</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Audio</h2>
+    <pre><code class="language-javascript">// In preload:
+this.load.audio('jump', 'assets/sounds/jump.wav');
+this.load.audio('music', 'assets/sounds/music.mp3');
+
+// In create:
+this.jumpSound = this.sound.add('jump');
+this.music = this.sound.add('music', {
+  loop: true,
+  volume: 0.5
+});
+
+// Play sounds
+this.jumpSound.play();
+this.music.play();
+
+// Stop music
+this.music.stop();</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Scene Management</h2>
+    <pre><code class="language-javascript">// Start a new scene
+this.scene.start('GameScene');
+
+// Start with data
+this.scene.start('GameOverScene', { score: this.score });
+
+// Access data in receiving scene (in create)
+const data = this.scene.settings.data;
+this.finalScore = data.score;
+
+// Run scenes in parallel
+this.scene.launch('UIScene');
+
+// Pause/resume scenes
+this.scene.pause('GameScene');
+this.scene.resume('GameScene');
+
+// Stop a scene (removes from memory)
+this.scene.stop('GameScene');</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Timers & Events</h2>
+    <pre><code class="language-javascript">// Single delayed event
+this.time.delayedCall(1000, () => {
+  console.log('1 second has passed');
+}, null, this);
+
+// Repeating timer
+this.enemyTimer = this.time.addEvent({
+  delay: 2000,            // ms
+  callback: this.spawnEnemy,
+  callbackScope: this,
+  loop: true
+});
+
+// Stop timer
+this.enemyTimer.remove();</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Tweens (Animations)</h2>
+    <pre><code class="language-javascript">// Fade in
+this.tweens.add({
+  targets: this.logo,
+  alpha: { from: 0, to: 1 },
+  duration: 2000,
+  ease: 'Power2'
+});
+
+// Movement tween
+this.tweens.add({
+  targets: this.enemy,
+  x: 600,
+  y: 300,
+  duration: 3000,
+  ease: 'Sine.easeInOut',
+  yoyo: true,       // Go back and forth
+  repeat: -1        // Repeat forever
+});
+
+// Chained tweens with callback
+this.tweens.chain({
+  tweens: [
+    {
+      targets: this.player,
+      x: 600,
+      duration: 1000
+    },
+    {
+      targets: this.player,
+      y: 500,
+      duration: 1000,
+      onComplete: () => {
+        console.log('Animation sequence complete');
+      }
+    }
+  ]
+});</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Groups</h2>
+    <pre><code class="language-javascript">// Create a group
+this.enemies = this.physics.add.group();
+
+// Add multiple items
+this.enemies.createMultiple({
+  key: 'enemy',
+  repeat: 5,
+  setXY: {
+    x: 100,
+    y: 100,
+    stepX: 70
+  }
+});
+
+// Or add items one by one
+const enemy = this.enemies.create(x, y, 'enemy');
+enemy.setVelocity(Phaser.Math.Between(-200, 200), 20);
+
+// Apply to all group members
+this.enemies.children.iterate((child) => {
+  child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+});</code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Game Configuration Options</h2>
+    <pre><code class="language-javascript">const config = {
+  type: Phaser.AUTO,         // or Phaser.CANVAS, Phaser.WEBGL
+  width: 800,
+  height: 600,
+  backgroundColor: '#2d2d2d',
+  parent: 'game-container',  // ID of container div
+  pixelArt: true,            // Prevent pixel art from being blurred
+  scale: {
+    mode: Phaser.Scale.FIT,  // Scale mode: RESIZE, FIT, etc.
+    autoCenter: Phaser.Scale.CENTER_BOTH
+  },
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: { y: 300 },
+      debug: false
+    }
+  },
+  scene: [Preloader, MainMenu, GameScene, GameOver]
+};</code></pre>
+  </div>
+</body>
+
+</html>

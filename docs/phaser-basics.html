@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phaser Basics Guide</title>
+  <link rel="shortcut icon" href="./microscope.png" type="image/png">
+  <!-- Prism.js Core -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.30.0/prism.min.js" defer></script>
+  <!-- Prism.js Toolbar -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/toolbar/prism-toolbar.min.js" defer></script>
+  <!-- Prism.js Copy to Clipboard -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.30.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"
+    defer></script>
+  <!-- Prism.js Theme -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prism-themes@1.9.0/themes/prism-material-light.min.css">
+  <link rel="stylesheet" href="header.css">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    pre {
+      background-color: #f5f5f5;
+      padding: 12px;
+      border-radius: 4px;
+      overflow-x: auto;
+      border-left: 4px solid #28a745;
+    }
+
+    code {
+      font-family: 'Courier New', monospace;
+    }
+
+    .code-sample {
+      margin-bottom: 20px;
+    }
+
+    .note {
+      background-color: #e9f7fe;
+      border-left: 4px solid #3498db;
+      padding: 12px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="container">
+      <nav class="site-nav">
+        <div class="logo">
+          <a href="index.html">
+            <img src="./microscope.png" alt="microscope drawing" class="logo-img">
+            <span>Phaser.js Game Development</span>
+          </a>
+        </div>
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="assignment.html" class="nav-link">Assignment</a></li>
+          <li><a href="scenes.html" class="nav-link">Phaser Scenes</a></li>
+          <li><a href="phaser-basics.html" class="nav-link">Phaser Basics</a></li>
+          <li><a href="phaser-cheatsheet.html" class="nav-link">Cheatsheet</a></li>
+          <li><a href="common-pitfalls.html" class="nav-link">Pitfalls</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <div class="header">
+    <img src="./microscope.png" alt="microscope drawing">
+    <h1>Phaser Basics Guide</h1>
+    <p>Core concepts for getting started with Phaser 3</p>
+  </div>
+
+  <div class="card">
+    <h2>What is Phaser?</h2>
+    <p>Phaser is a free, open-source framework for Canvas and WebGL powered browser games. It provides a set of tools to
+      help you build HTML5 games quickly and efficiently, with support for physics, animations, input, sound, and more.
+    </p>
+
+    <p>Phaser is primarily designed around a scene-based architecture. Each scene represents a distinct part of your
+      game, such as the main menu, the actual gameplay, or a game-over screen.</p>
+  </div>
+
+  <div class="card">
+    <h2>Setting Up a Phaser Project</h2>
+    <p>To set up a basic Phaser project with Vite, follow these steps:</p>
+
+    <div class="code-sample">
+      <h3>1. Install dependencies</h3>
+      <pre><code class="language-javascript">npm install phaser</code></pre>
+    </div>
+
+    <div class="code-sample">
+      <h3>2. Configure Phaser in your main.js file</h3>
+      <pre><code class="language-javascript">import Phaser from 'phaser';
+import MainScene from './scenes/MainScene';
+
+const config = {
+  parent: 'game-container',  // DOM element ID for the game canvas
+  type: Phaser.AUTO,         // Auto-select Canvas or WebGL based on browser support
+  width: 800,                // Game width in pixels
+  height: 600,               // Game height in pixels
+  backgroundColor: '#2d2d2d', // Background color
+  physics: {
+    default: 'arcade',       // Physics system
+    arcade: {
+      gravity: { y: 0 },     // No gravity (for top-down games)
+      debug: true            // Set to false for production
+    }
+  },
+
+  scene: [MainScene]         // Scenes to include in the game
+};
+
+// Create the game instance
+new Phaser.Game(config);</code></pre>
+    </div>
+
+    <div class="code-sample">
+      <h3>3. Create a basic scene file (src/scenes/MainScene.js)</h3>
+      <p><span style="font-weight: 700;">Note: </span>This example is using a file named phaser-logo.png as its image.
+        You
+        should be finding your
+        own image that is
+        approximately 200x150 and putting its filename. </p>
+      <pre><code class="language-javascript">import Phaser from 'phaser';
+
+export default class MainScene extends Phaser.Scene {
+  constructor() {
+    super('MainScene');  // Scene key, used for scene management
+  }
+
+  preload() {
+    // Load assets here (images, sounds, etc.)
+    this.load.image('logo', 'assets/images/phaser-logo.png');
+  }
+
+  create() {
+    // Create game objects here
+    this.add.image(400, 300, 'logo');
+
+    // Add some text
+    this.add.text(400, 450, 'Hello Phaser!', {
+      font: '24px Arial',
+      fill: '#ffffff'
+    }).setOrigin(0.5);
+  }
+
+  update() {
+    // Game loop logic runs on every frame
+    // This is where you typically handle game logic and input
+  }
+}</code></pre>
+    </div>
+
+    <div class="note">
+      <strong>Note:</strong> Make sure your index.html is set to import your main.js file as a module:
+      <pre><code class="language-html">&lt;script type="module" src="./src/main.js"&gt;&lt;/script&gt;</code></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>The Game Loop</h2>
+    <p>Phaser's game loop consists of three main methods that you should implement in your scenes:</p>
+
+    <ul>
+      <li><strong>preload():</strong> Called once at the beginning of the scene to load assets.</li>
+      <li><strong>create():</strong> Called once after preload is complete. Initialize your game objects here.</li>
+      <li><strong>update():</strong> Called on every frame. This is where you handle game logic, movement, collisions,
+        etc.</li>
+    </ul>
+
+    <div class="note">
+      <p>It's important to understand when to use each method:</p>
+      <ul>
+        <li>Use <strong>preload()</strong> only for loading assets</li>
+        <li>Use <strong>create()</strong> for one-time setup</li>
+        <li>Use <strong>update()</strong> for logic that needs to run every frame</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Loading Assets</h2>
+    <p>Phaser has a robust asset loading system. Here are some common asset types you'll load:</p>
+
+    <div class="code-sample">
+      <h3>Images</h3>
+      <pre><code class="language-javascript">// In preload()
+this.load.image('logo', 'assets/images/logo.png');
+
+// In create() to use it
+this.add.image(400, 300, 'logo');</code></pre>
+    </div>
+
+    <div class="code-sample">
+      <h3>Spritesheets</h3>
+      <pre><code class="language-javascript">// In preload()
+this.load.spritesheet('character', 'assets/images/character.png', {
+  frameWidth: 32,
+  frameHeight: 48
+});
+
+// In create() to use it
+this.player = this.add.sprite(100, 100, 'character', 0);</code></pre>
+    </div>
+
+    <div class="code-sample">
+      <h3>Audio</h3>
+      <pre><code class="language-javascript">// In preload()
+this.load.audio('bgm', 'assets/sounds/background-music.mp3');
+this.load.audio('jump', 'assets/sounds/jump.wav');
+
+// In create() to use it
+this.music = this.sound.add('bgm', { loop: true });
+this.music.play();
+
+this.jumpSound = this.sound.add('jump');
+// Play it later with: this.jumpSound.play();</code></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Basic Interactivity</h2>
+    <p>Phaser makes it easy to add interactivity to your game objects:</p>
+
+    <div class="code-sample">
+      <h3>Making an image interactive</h3>
+      <pre><code class="language-javascript">// In create()
+const logo = this.add.image(400, 300, 'logo');
+
+// Make the image interactive
+logo.setInteractive();
+
+// Add click/touch event
+logo.on('pointerdown', () => {
+  console.log('Logo clicked!');
+  // Do something when clicked
+  logo.setTint(0xff0000); // Turn it red
+});
+
+// Change cursor on hover
+logo.on('pointerover', () => {
+  this.input.setDefaultCursor('pointer');
+});
+
+logo.on('pointerout', () => {
+  this.input.setDefaultCursor('default');
+});</code></pre>
+    </div>
+
+    <div class="code-sample">
+      <h3>Keyboard input</h3>
+      <pre><code class="language-javascript">// In create()
+this.cursors = this.input.keyboard.createCursorKeys();
+
+// In update()
+if (this.cursors.left.isDown) {
+  // Move left
+  this.player.x -= 4;
+} else if (this.cursors.right.isDown) {
+  // Move right
+  this.player.x += 4;
+}
+
+// For specific keys
+this.spaceKey = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+// In update()
+if (Phaser.Input.Keyboard.JustDown(this.spaceKey)) {
+  // Jump or action (only triggers once per press)
+  this.jumpSound.play();
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Working with Text</h2>
+    <p>Phaser allows you to create and customize text objects easily:</p>
+
+    <div class="code-sample">
+      <pre><code class="language-javascript">// Basic text
+this.add.text(400, 300, 'Hello World', {
+  font: '32px Arial',
+  fill: '#ffffff'
+}).setOrigin(0.5);
+
+// Score text that will be updated
+this.scoreText = this.add.text(16, 16, 'Score: 0', {
+  fontSize: '32px',
+  fill: '#fff'
+});
+
+// Update text content later
+let score = 0;
+score += 10;
+this.scoreText.setText(`Score: ${score}`);</code></pre>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Next Steps</h2>
+    <p>Now that you understand the basics, you're ready to start building your first Phaser game! Refer to these
+      additional resources as you work on your mini-projects:</p>
+
+    <ul>
+      <li><a href="phaser-cheatsheet.html">Phaser Quick Reference</a> - Common code snippets and patterns</li>
+      <li><a href="common-pitfalls.html">Common Pitfalls & Solutions</a> - Troubleshooting help</li>
+      <li><a href="https://photonstorm.github.io/phaser3-docs/index.html">Phaser 3 Documentation</a> -
+        Official API reference</li>
+      <li><a href="https://phaser.io/examples">Phaser Examples</a> - Interactive examples of Phaser
+        features</li>
+    </ul>
+  </div>
+</body>
+
+</html>
