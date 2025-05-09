@@ -5,12 +5,12 @@ export default class MainMenu extends Phaser.Scene {
   }
 
   preload() {
-    this.load.setPath('assets/images/');
-    this.load.image(['phaser-logo-200x150', 'background']);
+    this.load.image('phaser-logo-200x150', './assets/images/phaser-logo-200x150.png');
+    this.load.image('background', './assets/images/background.png');
 
     //  Sprite Sheet
     // Load the player sprite sheet with calculated dimensions
-    this.load.spritesheet('player', 'assets/images/Player-Ship.png', {
+    this.load.spritesheet('player', './assets/images/Player-Ship.png', {
       frameWidth: 72,   // Width of each frame
       frameHeight: 72   // Height of each frame
     });

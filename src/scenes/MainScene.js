@@ -21,19 +21,36 @@ export default class MainScene extends Phaser.Scene {
    */
   preload() {
     //  Images
-    this.load.setPath('assets/images/');
-    this.load.image(['background', 'Blue-Scifi-Pillar', 'Green-Scifi-Pillar', 'alienship']);
+    this.load.image('background', './assets/images/background.png');
+    this.load.image('Blue-Scifi-Pillar', './assets/images/Blue-Scifi-Pillar.png');
+    this.load.image('Green-Scifi-Pillar', './assets/images/Green-Scifi-Pillar.png');
+    this.load.image('alienship', './assets/images/alienship.png');
 
     //  Sprite Sheet
     // Load the player sprite sheet with calculated dimensions
-    this.load.spritesheet('player', 'assets/images/Player-Ship.png', {
+    this.load.spritesheet('player', './assets/images/Player-Ship.png', {
       frameWidth: 72,   // Width of each frame
       frameHeight: 72   // Height of each frame
     });
 
     //  Audio
     // Load a sound effect for clicking
-    this.load.audio('shoot', 'assets/sounds/mixkit-sci-fi-click-900.wav');
+    this.load.audio('shoot', './assets/sounds/mixkit-sci-fi-click-900.wav');
+
+    //  Animations
+    this.anims.create({
+      key: 'fly',
+      frames: this.anims.generateFrameNumbers('player', {
+        start: 0,   // First frame
+        end: 3      // Last frame (there are 10 frames total, 0-9)
+      }),
+      frameRate: 10,  // 10 frames per second
+      repeat: -1      // -1 means loop indefinitely
+    });
+
+    // Set variables for wall and background movement
+    this.columnSpeed = 0.5;
+    this.parallax = 0.4;
   }
 
   /**
@@ -42,11 +59,16 @@ export default class MainScene extends Phaser.Scene {
    */
   create() {
     // Add background image, stretching to fit the game canvas
-    this.bg1 = this.add.tileSprite(0, 0, 2400, 1800, 'background').setOrigin(0, 0);
-    this.bg2 = this.add.tileSprite(800, 0, 2400, 1800, 'background').setOrigin(0, 0);
+    this.bg1 = this.add.tileSprite(0, 0, 0, 0, 'background').setOrigin(0, 0);
+
+    //Scale to frame size
+    this.bg1.setScale(2.5);
 
     // Create player using the new method
     this.createPlayer();
+
+    // Create cursor keys for input
+    this.cursors = this.input.keyboard.createCursorKeys();
 
     // Add a score display
     this.scoreText = this.add.text(16, 16, 'Score: 0', {
@@ -60,7 +82,7 @@ export default class MainScene extends Phaser.Scene {
 */
   createPlayer() {
     // Add player sprite at the left side of the screen
-    this.player = this.physics.add.sprite(170, 450, 'player');
+    this.player = this.physics.add.sprite(130, 450, 'player');
 
     // Scale the player down (the cat sprite is quite large)
     //this.player.setScale(0.5);
@@ -75,11 +97,7 @@ export default class MainScene extends Phaser.Scene {
       this.player.height * 0.8  // 80% of the sprite height
     );
 
-    // Center the physics body
-    this.player.body.setOffset(
-      this.player.width * 0.2,  // 20% offset from left
-      this.player.height * 0.2  // 20% offset from top
-    );
+    this.player.setAngle(90);
   }
 
   /**
@@ -91,6 +109,22 @@ export default class MainScene extends Phaser.Scene {
   update(time, delta) {
     // The time parameter is the total elapsed time in milliseconds
     // The delta parameter is the time elapsed since the last frame
+
+    const speed = 500;  // Movement speed in pixels per second
+    const halfHeight = this.player.height * 0.5 * this.player.scale;
+    const worldHeight = this.scale.height;
+
+    this.player.anims.play('fly', true);
+
+    this.bg1.tilePositionX += this.parallax;
+
+    if (this.cursors.down.isDown && this.player.y > halfHeight - worldHeight) {
+      this.player.setVelocityY(speed);
+    } else if (this.cursors.up.isDown && this.player.y < worldHeight) {
+      this.player.setVelocityY(-speed);
+    } else {
+      this.player.setVelocityY(0);
+    }
 
     // This is where you'd put code that needs to run every frame
     // For example, checking for collisions, movement, etc.
