@@ -21,19 +21,21 @@ export default class MainScene extends Phaser.Scene {
    */
   preload() {
     //  Images
-    this.load.setPath('assets/images/');
-    this.load.image(['background', 'Blue-Scifi-Pillar', 'Green-Scifi-Pillar', 'alienship']);
+    this.load.image('background', './assets/images/background.png');
+    this.load.image('Blue-Scifi-Pillar', './assets/images/Blue-Scifi-Pillar.png');
+    this.load.image('Green-Scifi-Pillar', './assets/images/Green-Scifi-Pillar.png');
+    this.load.image('alienship', './assets/images/alienship.png');
 
     //  Sprite Sheet
     // Load the player sprite sheet with calculated dimensions
-    this.load.spritesheet('player', 'assets/images/Player-Ship.png', {
+    this.load.spritesheet('player', './assets/images/Player-Ship.png', {
       frameWidth: 72,   // Width of each frame
       frameHeight: 72   // Height of each frame
     });
 
     //  Audio
     // Load a sound effect for clicking
-    this.load.audio('shoot', 'assets/sounds/mixkit-sci-fi-click-900.wav');
+    this.load.audio('shoot', './assets/sounds/mixkit-sci-fi-click-900.wav');
   }
 
   /**
