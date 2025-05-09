@@ -41,134 +41,45 @@ export default class MainScene extends Phaser.Scene {
    * Use this to create game objects and set up the scene
    */
   create() {
-    // Add a title
-    this.add.text(400, 100, 'Hello Phaser!', {
-      font: '64px Arial',
-      fill: '#11ff66'
-    }).setOrigin(0.5);
+    // Add background image, stretching to fit the game canvas
+    this.bg1 = this.add.tileSprite(0, 0, 2400, 1800, 'background').setOrigin(0, 0);
+    this.bg2 = this.add.tileSprite(800, 0, 2400, 1800, 'background').setOrigin(0, 0);
 
-    // Add background details or instructions
-    this.add.text(400, 180, 'My First Phaser Game', {
-      font: '24px Arial',
-      fill: '#ffffff'
-    }).setOrigin(0.5);
-
-    // Add the Phaser logo image to the center of the screen
-    const logo = this.add.image(400, 300, 'logo');
-
-    // Make the logo interactive
-    logo.setInteractive();
-
-    // Add click handler
-    logo.on('pointerdown', () => {
-      console.log('Logo clicked!');
-
-      if (!this.gameOver) {
-        // Play sound when clicked
-        this.sound.play('click');
-
-        // Update score
-        this.score += 10;
-        this.scoreText.setText(`Score: ${this.score}`);
-      }
-    });
-
-    // Add hover effects
-    logo.on('pointerover', () => {
-      logo.setScale(1.1);  // Make logo slightly bigger on hover
-    });
-
-    logo.on('pointerout', () => {
-      logo.setScale(1.0);  // Return to normal size when not hovering
-    });
-
-    //add movement to logo
-    this.tweens.add({
-      targets: logo,
-      x: 200,
-      y: 420,
-      duration: 1500,
-      ease: 'Sine.inOut',
-      yoyo: true,
-      repeat: -1
-    });
-
-    //add countdown to game over
-    this.timeLeft = 30; // 30 seconds
-    this.timeText = this.add.text(16, 60, 'Time: 30', {
-      font: '32px Arial',
-      fill: '#ffffff'
-    });
-
-    // Create a timer event
-    this.time.addEvent({
-      delay: 1000, // 1000ms = 1 second
-      callback: this.updateTimer,
-      callbackScope: this,
-      loop: true
-    });
+    // Create player using the new method
+    this.createPlayer();
 
     // Add a score display
     this.scoreText = this.add.text(16, 16, 'Score: 0', {
       font: '32px Arial',
       fill: '#ffffff'
     });
-
-    // Add instructions
-    this.add.text(400, 500, 'Click the logo to increase your score!', {
-      font: '18px Arial',
-      fill: '#024f9f'
-    }).setOrigin(0.5);
   }
 
   /**
-   * updateTimer - updates timer and checks for game over conditions
-   */
-  updateTimer() {
-    this.timeLeft--;
-    this.timeText.setText(`Time: ${this.timeLeft}`);
+* Create and configure the player character
+*/
+  createPlayer() {
+    // Add player sprite at the left side of the screen
+    this.player = this.physics.add.sprite(170, 450, 'player');
 
-    if (this.timeLeft <= 0) {
-      // Game over logic
-      this.add.text(400, 300, 'GAME OVER', {
-        font: '64px Arial',
-        fill: '#ff0000'
-      }).setOrigin(0.5);
+    // Scale the player down (the cat sprite is quite large)
+    //this.player.setScale(0.5);
 
-      const reset = this.add.rectangle(400, 400, 200,
-        100, 0xff0000).setOrigin(0.5);
+    // Enable physics body
+    this.player.setCollideWorldBounds(true);
 
-      this.add.text(400, 400, 'Click to Reset', {
-        font: '18px Arial',
-        fill: '#ffffff'
-      }).setOrigin(0.5);
+    // Adjust the physics body size for better collision
+    // This creates a tighter collision box around the character
+    this.player.body.setSize(
+      this.player.width * 0.6,  // 60% of the sprite width
+      this.player.height * 0.8  // 80% of the sprite height
+    );
 
-      //make interactive
-      reset.setInteractive();
-
-      // Add click handler, full reset of game
-      reset.on('pointerdown', () => {
-        this.score = 0;
-        this.gameOver = false;
-        this.children.removeAll();
-        this.create();
-      });
-
-      // Add hover effects
-      reset.on('pointerover', () => {
-        reset.setScale(1.1);  // Make reset button slightly bigger on hover
-      });
-
-      reset.on('pointerout', () => {
-        reset.setScale(1.0);  // Return to normal size when not hovering
-      });
-
-      // Stop the timer
-      this.time.removeAllEvents();
-
-      //turn off click mechanic
-      this.gameOver = true;
-    }
+    // Center the physics body
+    this.player.body.setOffset(
+      this.player.width * 0.2,  // 20% offset from left
+      this.player.height * 0.2  // 20% offset from top
+    );
   }
 
   /**
