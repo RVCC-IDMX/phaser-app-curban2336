@@ -2,8 +2,12 @@
 // Import Phaser from node_modules
 import Phaser from 'phaser';
 
-// Import our scene
-import MainScene from './scenes/MainScene';  // NEW: Import the MainScene
+// Import our scenes
+import Boot from './scenes/Boot.js'; // Import Boot
+import Preloader from './scenes/Preloader.js'; //Import Preloader
+import MainMenu from './scenes/MainMenu.js'; // Import MainMenu
+import MainScene from './scenes/MainScene';  // Import the MainScene
+//import EndScene from './scenes/EndScene';
 
 // Game configuration
 const config = {
@@ -46,7 +50,7 @@ const config = {
   antialias: false,
 
   // Scene(s) to include - we'll add scenes later
-  scene: [MainScene]
+  scene: [Boot, Preloader, MainMenu, MainScene]
 }
 
 // Create the game instance (with empty scene array for now)
