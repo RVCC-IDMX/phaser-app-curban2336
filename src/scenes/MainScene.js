@@ -25,6 +25,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image('Blue-Scifi-Pillar', './assets/images/Blue-Scifi-Pillar.png');
     this.load.image('Green-Scifi-Pillar', './assets/images/Green-Scifi-Pillar.png');
     this.load.image('alienship', './assets/images/alienship.png');
+    this.load.image('blast', './assets/images/Blast.png');
 
     //  Sprite Sheet
     // Load the player sprite sheet with calculated dimensions
@@ -51,6 +52,9 @@ export default class MainScene extends Phaser.Scene {
     // Set variables for wall and background movement
     this.columnSpeed = 0.5;
     this.parallax = 0.4;
+
+    // Set variables for game loop
+    this.isThrowing = false;
   }
 
   /**
@@ -66,6 +70,9 @@ export default class MainScene extends Phaser.Scene {
 
     // Create player using the new method
     this.createPlayer();
+
+    //create blaster for projectiles
+    this.createBlaster();
 
     // Create cursor keys for input
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -84,9 +91,6 @@ export default class MainScene extends Phaser.Scene {
     // Add player sprite at the left side of the screen
     this.player = this.physics.add.sprite(130, 450, 'player');
 
-    // Scale the player down (the cat sprite is quite large)
-    //this.player.setScale(0.5);
-
     // Enable physics body
     this.player.setCollideWorldBounds(true);
 
@@ -101,6 +105,28 @@ export default class MainScene extends Phaser.Scene {
   }
 
   /**
+* Create and configure the blaster
+*/
+  createBlaster() {
+    // Add blast sprite
+    this.blast = this.physics.add.sprite(130, 450, 'blast');
+
+    // Scale the blaster down (the sprite is too large)
+    this.blast.setScale(0.5);
+
+    // Adjust the physics body size for better collision
+    // This creates a tighter collision box around the character
+    this.blast.body.setSize(
+      this.blast.width * 0.6,  // 60% of the sprite width
+      this.blast.height * 0.8  // 80% of the sprite height
+    );
+
+    this.blast.setActive(false);
+    this.blast.setVisible(false);
+    this.blast.body.enable = false;
+  }
+
+  /**
    * Update - Called every frame
    * Use this for gameplay logic, movement, etc.
    * @param {number} time - Current time
@@ -110,14 +136,18 @@ export default class MainScene extends Phaser.Scene {
     // The time parameter is the total elapsed time in milliseconds
     // The delta parameter is the time elapsed since the last frame
 
+    // Establish player movement variables
     const speed = 500;  // Movement speed in pixels per second
     const halfHeight = this.player.height * 0.5 * this.player.scale;
     const worldHeight = this.scale.height;
 
+    // Player animation
     this.player.anims.play('fly', true);
 
+    //Parallax for background
     this.bg1.tilePositionX += this.parallax;
 
+    // Player movement with caps at top and bottom of screen
     if (this.cursors.down.isDown && this.player.y > halfHeight - worldHeight) {
       this.player.setVelocityY(speed);
     } else if (this.cursors.up.isDown && this.player.y < worldHeight) {
@@ -126,10 +156,44 @@ export default class MainScene extends Phaser.Scene {
       this.player.setVelocityY(0);
     }
 
+    if (this.cursors.space.isDown && !this.isThrowing) {
+      this.isThrowing = true;
+      this.fire(this.player.x, this.player.y);
+    }
+
+    if (this.blast.x >= 775) {
+      console.log('call to stop');
+      this.stop();
+    }
+
     // This is where you'd put code that needs to run every frame
     // For example, checking for collisions, movement, etc.
 
     // For now, we'll leave it empty or add basic debugging
     // console.log('Update called', time, delta);
+  }
+
+  //  Blaster Methods
+  fire(x, y) {
+    this.blast.body.enable = true;
+    this.blast.body.reset(x + 40, y);
+
+    this.blast.setActive(true);
+    this.blast.setVisible(true);
+
+    this.blast.setVelocityX(1000);
+    this.blast.setAccelerationX(1400);
+  }
+
+  stop() {
+    console.log('stopping');
+    this.isThrowing = false;
+    this.blast.setActive(false);
+    this.blast.setVisible(false);
+
+    this.blast.setVelocityX(0);
+    this.blast.body.reset(this.player.x + 10, this.player.y);
+
+    this.blast.body.enable = false;
   }
 }
