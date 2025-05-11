@@ -58,7 +58,9 @@ export default class MainScene extends Phaser.Scene {
 
     // Set variables for game loop
     this.isThrowing = false;
+    this.bossIsThrowing = false;
     this.levelCount = 0;
+    this.bossPhase = false;
 
     // recollect Highscore
     this.highscore = this.registry.get('highscore');
@@ -83,6 +85,9 @@ export default class MainScene extends Phaser.Scene {
 
     //create walls
     this.createWalls();
+
+    //create Boss
+    this.createBoss();
 
     // Create cursor keys for input
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -118,6 +123,48 @@ export default class MainScene extends Phaser.Scene {
     );
 
     this.player.setAngle(90);
+  }
+
+  /**
+* Create and configure the Alien Ship
+*/
+  createBoss() {
+    // Add player sprite at the left side of the screen
+    this.boss = this.physics.add.sprite(1000, 300, 'alienship');
+
+    // Scale the boss down (the sprite is too large)
+    this.boss.setScale(0.5);
+
+    // Adjust the physics body size for better collision
+    // This creates a tighter collision box around the character
+    this.boss.body.setSize(
+      this.boss.width * 0.6,  // 60% of the sprite width
+      this.boss.height * 0.8  // 80% of the sprite height
+    );
+
+    // Set boss variables
+    this.boss.speed = 300;
+    this.boss.health = 30;
+    this.boss.currentHealth = 30;
+
+    // Boss Blaster
+    // Add blast sprite
+    this.bossBlast = this.physics.add.sprite(0, 0, 'blast');
+
+    // Scale the blaster down (the sprite is too large)
+    this.bossBlast.setScale(0.5);
+
+    // Adjust the physics body size for better collision
+    // This creates a tighter collision box around the character
+    this.bossBlast.body.setSize(
+      this.bossBlast.width * 0.6,  // 60% of the sprite width
+      this.bossBlast.height * 0.8  // 80% of the sprite height
+    );
+
+    // turn off
+    this.bossBlast.setActive(false);
+    this.bossBlast.setVisible(false);
+    this.bossBlast.body.enable = false;
   }
 
   /**
@@ -263,6 +310,12 @@ export default class MainScene extends Phaser.Scene {
       this.stop();
     }
 
+    // Run collision check for shooting the Boss Ship
+    if (this.physics.overlap(this.blast, this.boss)) {
+      this.stop();
+      this.damage(this.blast.damage);
+    }
+
     // Run collisions for player and blue portions
     if (this.physics.overlap(this.player, this.wall1)) {
       if (this.score > this.highscore) {
@@ -290,7 +343,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     //run check to send wall
-    if (time > 500 && !this.sending) {
+    if (time > 500 && !this.sending && !this.bossPhase) {
       this.wallIndex = Math.floor(Math.random() * 4);
       this.sendWall(this.wallIndex);
       this.sending = true;
@@ -314,6 +367,13 @@ export default class MainScene extends Phaser.Scene {
     //Parallax for background
     this.bg1.tilePositionX += this.parallax;
 
+    //Boss Entrance
+    if (this.bossPhase && this.boss.x > 600) {
+      this.boss.setVelocityX(-this.boss.speed);
+    } else {
+      this.boss.setVelocityX(0);
+    }
+
     // Player movement with caps at top and bottom of screen
     if (this.cursors.down.isDown && this.player.y > halfHeight - worldHeight) {
       this.player.setVelocityY(speed);
@@ -332,6 +392,11 @@ export default class MainScene extends Phaser.Scene {
     // Blast border check
     if (this.blast.x >= 775) {
       this.stop();
+    }
+
+    // Boss blast border check
+    if (this.bossBlast.x <= 0) {
+      this.bossBlastStop();
     }
   }
 
@@ -435,10 +500,11 @@ export default class MainScene extends Phaser.Scene {
     this.sending = false;
     this.scoreText.text = `Score: ${this.score}`;
 
-    // If the score reaches a multiple of 5, increase the difficulty
+    // If the score reaches a multiple of 5, increase the difficulty and send a boss
     if (this.levelCount % 5 === 0) {
       this.increment();
       this.levelCount = 1;
+      this.bossPhase = true;
     }
   }
 
@@ -522,5 +588,55 @@ export default class MainScene extends Phaser.Scene {
     this.blast.body.reset(this.player.x + 10, this.player.y);
 
     this.blast.body.enable = false;
+  }
+
+  // Alien Boss Ship Methods
+
+  damage(damage) {
+    this.boss.currentHealth -= damage;
+    if (this.boss.currentHealth <= 0) {
+      this.bossReset();
+    }
+  }
+
+  bossReset() {
+    this.boss.setVelocityX(0);
+    this.boss.setVelocityY(0);
+    this.boss.x = 1000;
+    this.boss.y = 300;
+    this.bossPhase = false;
+    this.boss.health += 20;
+    this.boss.currentHealth = this.boss.health;
+    this.score += 1;
+    this.levelCount += 1;
+    this.scoreText.text = `Score: ${this.score}`;
+    this.bossBlastStop();
+  }
+
+  /**
+  * Reset blast back to ready position and reset check bools for Boss
+  */
+  bossBlastStop() {
+    this.bossIsThrowing = false;
+    this.bossBlast.setActive(false);
+    this.bossBlast.setVisible(false);
+
+    this.bossBlast.setVelocityX(0);
+    this.bossBlast.body.reset(this.boss.x + 10, this.boss.y);
+
+    this.bossBlast.body.enable = false;
+  }
+
+  bossBlastFire(x, y) {
+    this.bossBlast.body.enable = true;
+    this.bossBlast.body.reset(x + 40, y);
+
+    this.sound.play('shoot');
+
+    this.bossBlast.setActive(true);
+    this.bossBlast.setVisible(true);
+
+    this.bossBlast.setVelocityX(-1500);
+    this.bossBlast.setAccelerationX(-1400);
   }
 }
