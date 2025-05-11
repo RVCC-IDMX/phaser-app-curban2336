@@ -1,4 +1,5 @@
-
+/* eslint-disable indent */
+/* eslint-disable max-len */
 import Phaser from 'phaser';
 
 /**
@@ -50,11 +51,14 @@ export default class MainScene extends Phaser.Scene {
     });
 
     // Set variables for wall and background movement
-    this.columnSpeed = 0.5;
+    this.columnSpeed = 80;
     this.parallax = 0.4;
+    this.wallIndex = 0;
+    this.sending = false;
 
     // Set variables for game loop
     this.isThrowing = false;
+    this.levelCount = 1;
   }
 
   /**
@@ -73,6 +77,9 @@ export default class MainScene extends Phaser.Scene {
 
     //create blaster for projectiles
     this.createBlaster();
+
+    //create walls
+    this.createWalls();
 
     // Create cursor keys for input
     this.cursors = this.input.keyboard.createCursorKeys();
@@ -109,7 +116,7 @@ export default class MainScene extends Phaser.Scene {
 */
   createBlaster() {
     // Add blast sprite
-    this.blast = this.physics.add.sprite(130, 450, 'blast');
+    this.blast = this.physics.add.sprite(0, 0, 'blast');
 
     // Scale the blaster down (the sprite is too large)
     this.blast.setScale(0.5);
@@ -121,9 +128,90 @@ export default class MainScene extends Phaser.Scene {
       this.blast.height * 0.8  // 80% of the sprite height
     );
 
+    this.blast.damage = 5;
+
     this.blast.setActive(false);
     this.blast.setVisible(false);
     this.blast.body.enable = false;
+  }
+
+  /**
+* Create and configure the walls
+*/
+  createWalls() {
+    // Add wall sprites
+    this.wall1 = [this.physics.add.sprite(1000, 80, 'Blue-Scifi-Pillar'), this.physics.add.sprite(1000, 240, 'Blue-Scifi-Pillar'), this.physics.add.sprite(1000, 400, 'Green-Scifi-Pillar'), this.physics.add.sprite(1000, 560, 'Blue-Scifi-Pillar')];
+
+    this.wall2 = [this.physics.add.sprite(1000, 80, 'Green-Scifi-Pillar'), this.physics.add.sprite(1000, 240, 'Blue-Scifi-Pillar'), this.physics.add.sprite(1000, 400, 'Blue-Scifi-Pillar'), this.physics.add.sprite(1000, 560, 'Blue-Scifi-Pillar')];
+
+    this.wall3 = [this.physics.add.sprite(1000, 80, 'Blue-Scifi-Pillar'), this.physics.add.sprite(1000, 240, 'Green-Scifi-Pillar'), this.physics.add.sprite(1000, 400, 'Blue-Scifi-Pillar'), this.physics.add.sprite(1000, 560, 'Blue-Scifi-Pillar')];
+
+    this.wall4 = [this.physics.add.sprite(1000, 80, 'Blue-Scifi-Pillar'), this.physics.add.sprite(1000, 240, 'Blue-Scifi-Pillar'), this.physics.add.sprite(1000, 400, 'Blue-Scifi-Pillar'), this.physics.add.sprite(1000, 560, 'Green-Scifi-Pillar')];
+
+    // Scale the wall components down (the sprite is too large)
+    this.wall1.forEach(element => {
+      element.setScale(0.5);
+
+      // Adjust the physics body size for better collision
+      // This creates a tighter collision box around the character
+      element.body.setSize(
+        element.width * 0.7,  // 60% of the sprite width
+        element.height * 0.8  // 80% of the sprite height
+      );
+
+      //turn off
+      element.setActive(false);
+      element.setVisible(false);
+      element.body.enable = false;
+    });
+
+    this.wall2.forEach(element => {
+      element.setScale(0.5);
+
+      // Adjust the physics body size for better collision
+      // This creates a tighter collision box around the character
+      element.body.setSize(
+        element.width * 0.7,  // 60% of the sprite width
+        element.height * 0.8  // 80% of the sprite height
+      );
+
+      //turn off
+      element.setActive(false);
+      element.setVisible(false);
+      element.body.enable = false;
+    });
+
+    this.wall3.forEach(element => {
+      element.setScale(0.5);
+
+      // Adjust the physics body size for better collision
+      // This creates a tighter collision box around the character
+      element.body.setSize(
+        element.width * 0.7,  // 60% of the sprite width
+        element.height * 0.8  // 80% of the sprite height
+      );
+
+      //turn off
+      element.setActive(false);
+      element.setVisible(false);
+      element.body.enable = false;
+    });
+
+    this.wall4.forEach(element => {
+      element.setScale(0.5);
+
+      // Adjust the physics body size for better collision
+      // This creates a tighter collision box around the character
+      element.body.setSize(
+        element.width * 0.7,  // 60% of the sprite width
+        element.height * 0.8  // 80% of the sprite height
+      );
+
+      //turn off
+      element.setActive(false);
+      element.setVisible(false);
+      element.body.enable = false;
+    });
   }
 
   /**
@@ -135,6 +223,32 @@ export default class MainScene extends Phaser.Scene {
   update(time, delta) {
     // The time parameter is the total elapsed time in milliseconds
     // The delta parameter is the time elapsed since the last frame
+    if (this.physics.overlap(this.blast, this.wall1[2])) {
+      this.greenShot(0);
+    }
+    else if (this.physics.overlap(this.blast, this.wall2[0])) {
+      this.greenShot(1);
+    }
+    else if (this.physics.overlap(this.blast, this.wall3[1])) {
+      this.greenShot(2);
+    }
+    else if (this.physics.overlap(this.blast, this.wall4[3])) {
+      this.greenShot(3);
+    }
+
+    //run check to send wall
+    if (time > 500 && !this.sending) {
+      this.wallIndex = Math.floor(Math.random() * 4);
+      this.sendWall(this.wallIndex);
+      this.sending = true;
+    }
+
+    // Run check for wall reset
+    if (this.wall1[0].x <= 0 || this.wall2[0].x <= 0 || this.wall3[0].x <= 0 || this.wall4[0].x <= 0 || this.wall1[2].x <= 0 || this.wall2[2].x <= 0 || this.wall3[2].x <= 0 || this.wall4[2].x <= 0) {
+      this.score += 1;
+      this.levelCount += 1;
+      this.stopWalls();
+    }
 
     // Establish player movement variables
     const speed = 500;  // Movement speed in pixels per second
@@ -156,21 +270,161 @@ export default class MainScene extends Phaser.Scene {
       this.player.setVelocityY(0);
     }
 
+    // Check for firing input
     if (this.cursors.space.isDown && !this.isThrowing) {
       this.isThrowing = true;
       this.fire(this.player.x, this.player.y);
     }
 
+    // Blast border check
     if (this.blast.x >= 775) {
-      console.log('call to stop');
       this.stop();
     }
+  }
 
-    // This is where you'd put code that needs to run every frame
-    // For example, checking for collisions, movement, etc.
+  //  Wall Methods
+  sendWall(index) {
+    switch (index) {
+      case 1:
+        this.wall1.forEach(element => {
+          element.setActive(true);
+          element.setVelocityX(-this.columnSpeed);
+          element.setVisible(true);
+          element.body.enable = true;
+        });
+        break;
+      case 2:
+        this.wall2.forEach(element => {
+          element.setActive(true);
+          element.setVelocityX(-this.columnSpeed);
+          element.setVisible(true);
+          element.body.enable = true;
+        });
+        break;
+      case 3:
+        this.wall3.forEach(element => {
+          element.setActive(true);
+          element.setVelocityX(-this.columnSpeed);
+          element.setVisible(true);
+          element.body.enable = true;
+        });
+        break;
+      case 4:
+        this.wall4.forEach(element => {
+          element.setActive(true);
+          element.setVelocityX(-this.columnSpeed);
+          element.setVisible(true);
+          element.body.enable = true;
+        });
+        break;
+      default:
+        this.wall4.forEach(element => {
+          element.setActive(true);
+          element.setVelocityX(-this.columnSpeed);
+          element.setVisible(true);
+          element.body.enable = true;
+        });
+        break;
+    }
+  }
 
-    // For now, we'll leave it empty or add basic debugging
-    // console.log('Update called', time, delta);
+  stopWalls() {
+    switch (this.wallIndex) {
+      case 1:
+        this.wall1.forEach(element => {
+          element.setVelocityX(0);
+          element.x = 1000;
+          element.setActive(false);
+          element.setVisible(false);
+          element.body.enable = false;
+        });
+        break;
+      case 2:
+        this.wall2.forEach(element => {
+          element.setVelocityX(0);
+          element.x = 1000;
+          element.setActive(false);
+          element.setVisible(false);
+          element.body.enable = false;
+        });
+        break;
+      case 3:
+        this.wall3.forEach(element => {
+          element.setVelocityX(0);
+          element.x = 1000;
+          element.setActive(false);
+          element.setVisible(false);
+          element.body.enable = false;
+        });
+        break;
+      case 4:
+        this.wall4.forEach(element => {
+          element.setVelocityX(0);
+          element.x = 1000;
+          element.setActive(false);
+          element.setVisible(false);
+          element.body.enable = false;
+        });
+        break;
+      default:
+        this.wall4.forEach(element => {
+          element.setVelocityX(0);
+          element.x = 1000;
+          element.setActive(false);
+          element.setVisible(false);
+          element.body.enable = false;
+        });
+        break;
+    }
+    this.sending = false;
+    this.scoreText.text = `Score: ${this.score}`;
+
+    if (this.levelCount % 5 === 0) {
+      this.increment();
+      this.levelCount = 1;
+    }
+  }
+
+  increment() {
+    this.columnSpeed += 60;
+    this.parallax += 0.2;
+  }
+
+  greenShot(index) {
+    this.stop();
+    console.log('collision detected');
+    switch (index) {
+      case 0:
+        this.wall1[2].setVelocityX(0);
+        this.wall1[2].x = 1000;
+        this.wall1[2].setActive(false);
+        this.wall1[2].setVisible(false);
+        this.wall1[2].body.enable = false;
+        break;
+      case 1:
+        this.wall2[0].setVelocityX(0);
+        this.wall2[0].x = 1000;
+        this.wall2[0].setActive(false);
+        this.wall2[0].setVisible(false);
+        this.wall2[0].body.enable = false;
+        break;
+      case 2:
+        this.wall3[1].setVelocityX(0);
+        this.wall3[1].x = 1000;
+        this.wall3[1].setActive(false);
+        this.wall3[1].setVisible(false);
+        this.wall3[1].body.enable = false;
+        break;
+      case 3:
+        this.wall4[3].setVelocityX(0);
+        this.wall4[3].x = 1000;
+        this.wall4[3].setActive(false);
+        this.wall4[3].setVisible(false);
+        this.wall4[3].body.enable = false;
+        break;
+      default:
+        break;
+    }
   }
 
   //  Blaster Methods
@@ -181,12 +435,11 @@ export default class MainScene extends Phaser.Scene {
     this.blast.setActive(true);
     this.blast.setVisible(true);
 
-    this.blast.setVelocityX(1000);
+    this.blast.setVelocityX(1500);
     this.blast.setAccelerationX(1400);
   }
 
   stop() {
-    console.log('stopping');
     this.isThrowing = false;
     this.blast.setActive(false);
     this.blast.setVisible(false);
