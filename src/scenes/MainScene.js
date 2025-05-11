@@ -58,7 +58,7 @@ export default class MainScene extends Phaser.Scene {
 
     // Set variables for game loop
     this.isThrowing = false;
-    this.levelCount = 1;
+    this.levelCount = 0;
   }
 
   /**
@@ -128,8 +128,10 @@ export default class MainScene extends Phaser.Scene {
       this.blast.height * 0.8  // 80% of the sprite height
     );
 
+    // Set damage for blaster
     this.blast.damage = 5;
 
+    // turn off
     this.blast.setActive(false);
     this.blast.setVisible(false);
     this.blast.body.enable = false;
@@ -223,6 +225,8 @@ export default class MainScene extends Phaser.Scene {
   update(time, delta) {
     // The time parameter is the total elapsed time in milliseconds
     // The delta parameter is the time elapsed since the last frame
+
+    // Run collision for player blast and green portions
     if (this.physics.overlap(this.blast, this.wall1[2])) {
       this.greenShot(0);
     }
@@ -236,6 +240,21 @@ export default class MainScene extends Phaser.Scene {
       this.greenShot(3);
     }
 
+    // Then run collisions for player blast and blue portions
+    if (this.physics.overlap(this.blast, this.wall1)) {
+      this.stop();
+    }
+    else if (this.physics.overlap(this.blast, this.wall2)) {
+      this.stop();
+    }
+    else if (this.physics.overlap(this.blast, this.wall3)) {
+      this.stop();
+    }
+    else if (this.physics.overlap(this.blast, this.wall4)) {
+      this.stop();
+    }
+
+    // Run collisions for player and blue portions
     if (this.physics.overlap(this.player, this.wall1)) {
       this.scene.start('MainMenu');
     }
@@ -297,6 +316,7 @@ export default class MainScene extends Phaser.Scene {
 
   //  Wall Methods
   sendWall(index) {
+    // Depending on the randomly generated index number, a different configuration of the wall is sent across the screen
     switch (index) {
       case 1:
         this.wall1.forEach(element => {
@@ -342,6 +362,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   stopWalls() {
+    //Reset the walls position
     switch (this.wallIndex) {
       case 1:
         this.wall1.forEach(element => {
@@ -389,9 +410,11 @@ export default class MainScene extends Phaser.Scene {
         });
         break;
     }
+    //modify score and reset sending check
     this.sending = false;
     this.scoreText.text = `Score: ${this.score}`;
 
+    // If the score reaches a multiple of 5, increase the difficulty
     if (this.levelCount % 5 === 0) {
       this.increment();
       this.levelCount = 1;
@@ -399,13 +422,19 @@ export default class MainScene extends Phaser.Scene {
   }
 
   increment() {
+    // Increase the speed of the walls passing and increase the speed of the parallax to match
     this.columnSpeed += 60;
     this.parallax += 0.2;
   }
 
+  /**
+   * When the Player Blast hits a green portion of the wall, remove that portion
+   * @param {*} index the configuration of the wall
+   */
   greenShot(index) {
+    //reset player blast
     this.stop();
-    console.log('collision detected');
+    //reset green portion of the wall
     switch (index) {
       case 0:
         this.wall1[2].setVelocityX(0);
@@ -441,6 +470,12 @@ export default class MainScene extends Phaser.Scene {
   }
 
   //  Blaster Methods
+
+  /**
+   * Fire the blast and set the physics movement in place
+   * @param {*} x the x coordinate of the player
+   * @param {*} y the y coordinate of the player
+   */
   fire(x, y) {
     this.blast.body.enable = true;
     this.blast.body.reset(x + 40, y);
@@ -452,6 +487,9 @@ export default class MainScene extends Phaser.Scene {
     this.blast.setAccelerationX(1400);
   }
 
+  /**
+   * Reset blast back to ready position and reset check bools for shooting
+   */
   stop() {
     this.isThrowing = false;
     this.blast.setActive(false);
