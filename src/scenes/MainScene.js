@@ -236,6 +236,19 @@ export default class MainScene extends Phaser.Scene {
       this.greenShot(3);
     }
 
+    if (this.physics.overlap(this.player, this.wall1)) {
+      this.scene.start('MainMenu');
+    }
+    else if (this.physics.overlap(this.player, this.wall2)) {
+      this.scene.start('MainMenu');
+    }
+    else if (this.physics.overlap(this.player, this.wall3)) {
+      this.scene.start('MainMenu');
+    }
+    else if (this.physics.overlap(this.player, this.wall4)) {
+      this.scene.start('MainMenu');
+    }
+
     //run check to send wall
     if (time > 500 && !this.sending) {
       this.wallIndex = Math.floor(Math.random() * 4);

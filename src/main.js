@@ -6,8 +6,7 @@ import Phaser from 'phaser';
 import Boot from './scenes/Boot.js'; // Import Boot
 import Preloader from './scenes/Preloader.js'; //Import Preloader
 import MainMenu from './scenes/MainMenu.js'; // Import MainMenu
-import MainScene from './scenes/MainScene';  // Import the MainScene
-//import EndScene from './scenes/EndScene';
+import MainScene from './scenes/MainScene.js';  // Import the MainScene
 
 // Game configuration
 const config = {
