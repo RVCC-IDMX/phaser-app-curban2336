@@ -59,6 +59,9 @@ export default class MainScene extends Phaser.Scene {
     // Set variables for game loop
     this.isThrowing = false;
     this.levelCount = 0;
+
+    // recollect Highscore
+    this.highscore = this.registry.get('highscore');
   }
 
   /**
@@ -88,6 +91,12 @@ export default class MainScene extends Phaser.Scene {
     this.scoreText = this.add.text(16, 16, 'Score: 0', {
       font: '32px Arial',
       fill: '#ffffff'
+    });
+
+    this.highscoreText = this.add.text(680, 16, `Best: ${this.highscore}`, {
+      fontFamily: 'Arial',
+      fontSize: 32,
+      color: '#ffffff'
     });
   }
 
@@ -256,15 +265,27 @@ export default class MainScene extends Phaser.Scene {
 
     // Run collisions for player and blue portions
     if (this.physics.overlap(this.player, this.wall1)) {
+      if (this.score > this.highscore) {
+        this.registry.set('highscore', this.score);
+      }
       this.scene.start('MainMenu');
     }
     else if (this.physics.overlap(this.player, this.wall2)) {
+      if (this.score > this.highscore) {
+        this.registry.set('highscore', this.score);
+      }
       this.scene.start('MainMenu');
     }
     else if (this.physics.overlap(this.player, this.wall3)) {
+      if (this.score > this.highscore) {
+        this.registry.set('highscore', this.score);
+      }
       this.scene.start('MainMenu');
     }
     else if (this.physics.overlap(this.player, this.wall4)) {
+      if (this.score > this.highscore) {
+        this.registry.set('highscore', this.score);
+      }
       this.scene.start('MainMenu');
     }
 
@@ -479,6 +500,8 @@ export default class MainScene extends Phaser.Scene {
   fire(x, y) {
     this.blast.body.enable = true;
     this.blast.body.reset(x + 40, y);
+
+    this.sound.play('shoot');
 
     this.blast.setActive(true);
     this.blast.setVisible(true);
