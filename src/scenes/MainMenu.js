@@ -40,6 +40,22 @@ export default class MainMenu extends Phaser.Scene {
       strokeThickness: 2
     }).setOrigin(0.5);
 
+    this.add.text(400, 450, 'Arrows to move up and down', {
+      fontFamily: 'Arial',
+      fontSize: '24px',
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 2
+    }).setOrigin(0.5);
+
+    this.add.text(400, 500, 'Spacebar to shoot', {
+      fontFamily: 'Arial',
+      fontSize: '24px',
+      color: '#ffffff',
+      stroke: '#000000',
+      strokeThickness: 2
+    }).setOrigin(0.5);
+
     this.tweens.add({
       targets: logo,
       x: 400,
