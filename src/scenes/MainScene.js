@@ -51,8 +51,8 @@ export default class MainScene extends Phaser.Scene {
     });
 
     // Set variables for wall and background movement
-    this.columnSpeed = 80;
-    this.parallax = 0.4;
+    this.columnSpeed = 110;
+    this.parallax = 0.5;
     this.wallIndex = 0;
     this.sending = false;
 
@@ -61,6 +61,7 @@ export default class MainScene extends Phaser.Scene {
     this.bossIsThrowing = false;
     this.levelCount = 0;
     this.bossPhase = false;
+    this.directionTimer = 0;
 
     // recollect Highscore
     this.highscore = this.registry.get('highscore');
@@ -135,6 +136,9 @@ export default class MainScene extends Phaser.Scene {
     // Scale the boss down (the sprite is too large)
     this.boss.setScale(0.5);
 
+    //disable world collider for boss
+    this.boss.setCollideWorldBounds(false);
+
     // Adjust the physics body size for better collision
     // This creates a tighter collision box around the character
     this.boss.body.setSize(
@@ -152,7 +156,7 @@ export default class MainScene extends Phaser.Scene {
     this.bossBlast = this.physics.add.sprite(0, 0, 'blast');
 
     // Scale the blaster down (the sprite is too large)
-    this.bossBlast.setScale(0.5);
+    this.bossBlast.setScale(0.7);
 
     // Adjust the physics body size for better collision
     // This creates a tighter collision box around the character
@@ -316,29 +320,49 @@ export default class MainScene extends Phaser.Scene {
       this.damage(this.blast.damage);
     }
 
+    // Run collisions for player blast and boss blast
+    if (this.physics.overlap(this.blast, this.bossBlast)) {
+      this.stop();
+      this.bossBlastStop();
+    }
+
+    // Run collisions for player and boss blasts
+    if (this.physics.overlap(this.player, this.bossBlast)) {
+      console.log('hit player');
+      if (this.score > this.highscore) {
+        this.registry.set('highscore', this.score);
+      }
+      this.score = 0;
+      this.scene.start('MainMenu');
+    }
+
     // Run collisions for player and blue portions
     if (this.physics.overlap(this.player, this.wall1)) {
       if (this.score > this.highscore) {
         this.registry.set('highscore', this.score);
       }
+      this.score = 0;
       this.scene.start('MainMenu');
     }
     else if (this.physics.overlap(this.player, this.wall2)) {
       if (this.score > this.highscore) {
         this.registry.set('highscore', this.score);
       }
+      this.score = 0;
       this.scene.start('MainMenu');
     }
     else if (this.physics.overlap(this.player, this.wall3)) {
       if (this.score > this.highscore) {
         this.registry.set('highscore', this.score);
       }
+      this.score = 0;
       this.scene.start('MainMenu');
     }
     else if (this.physics.overlap(this.player, this.wall4)) {
       if (this.score > this.highscore) {
         this.registry.set('highscore', this.score);
       }
+      this.score = 0;
       this.scene.start('MainMenu');
     }
 
@@ -372,6 +396,27 @@ export default class MainScene extends Phaser.Scene {
       this.boss.setVelocityX(-this.boss.speed);
     } else {
       this.boss.setVelocityX(0);
+    }
+
+    //Boss Movement
+    if (this.bossPhase && this.boss.x <= 600) {
+      // Enable physics body
+      this.boss.setCollideWorldBounds(true);
+      this.directionTimer += delta;
+      this.bossdirection = Math.round(Math.random() * 10);
+      if (this.directionTimer >= 800) {
+        if (this.bossdirection > 5) {
+          this.boss.setVelocityY(-this.boss.speed);
+        } else {
+          this.boss.setVelocityY(this.boss.speed);
+        }
+        this.directionTimer = 0;
+        if (!this.bossIsThrowing) {
+          this.bossBlastFire(this.boss.x, this.boss.y);
+        }
+      }
+    } else {
+      this.boss.setVelocityY(0);
     }
 
     // Player movement with caps at top and bottom of screen
@@ -503,7 +548,7 @@ export default class MainScene extends Phaser.Scene {
     // If the score reaches a multiple of 5, increase the difficulty and send a boss
     if (this.levelCount % 5 === 0) {
       this.increment();
-      this.levelCount = 1;
+      this.levelCount = 0;
       this.bossPhase = true;
     }
   }
@@ -600,6 +645,7 @@ export default class MainScene extends Phaser.Scene {
   }
 
   bossReset() {
+    this.boss.setCollideWorldBounds(false);
     this.boss.setVelocityX(0);
     this.boss.setVelocityY(0);
     this.boss.x = 1000;
@@ -629,14 +675,14 @@ export default class MainScene extends Phaser.Scene {
 
   bossBlastFire(x, y) {
     this.bossBlast.body.enable = true;
-    this.bossBlast.body.reset(x + 40, y);
+    this.bossBlast.body.reset(x - 80, y);
 
     this.sound.play('shoot');
 
     this.bossBlast.setActive(true);
     this.bossBlast.setVisible(true);
 
-    this.bossBlast.setVelocityX(-1500);
+    this.bossBlast.setVelocityX(-800);
     this.bossBlast.setAccelerationX(-1400);
   }
 }
