@@ -38,7 +38,7 @@ const config = {
     default: 'arcade',
     arcade: {
       gravity: { y: 0 }, // No gravity by default (top-down game)
-      debug: true        // Set to false in production to hide physics debug info
+      //debug: true        // Set to false in production to hide physics debug info
     }
   },
 

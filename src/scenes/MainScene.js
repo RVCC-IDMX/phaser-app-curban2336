@@ -99,6 +99,7 @@ export default class MainScene extends Phaser.Scene {
       fill: '#ffffff'
     });
 
+    // Display the highscore of the player
     this.highscoreText = this.add.text(680, 16, `Best: ${this.highscore}`, {
       fontFamily: 'Arial',
       fontSize: 32,
@@ -123,6 +124,7 @@ export default class MainScene extends Phaser.Scene {
       this.player.height * 0.8  // 80% of the sprite height
     );
 
+    // modify rotation to set the front in the right direction
     this.player.setAngle(90);
   }
 
@@ -446,6 +448,10 @@ export default class MainScene extends Phaser.Scene {
   }
 
   //  Wall Methods
+  /**
+   * sends a wall across the screen
+   * @param {*} index the index number to determine which wall configuration the method sends
+   */
   sendWall(index) {
     // Depending on the randomly generated index number, a different configuration of the wall is sent across the screen
     switch (index) {
@@ -492,6 +498,9 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * Reset the walls
+   */
   stopWalls() {
     //Reset the walls position
     switch (this.wallIndex) {
@@ -637,6 +646,10 @@ export default class MainScene extends Phaser.Scene {
 
   // Alien Boss Ship Methods
 
+  /**
+   * Deals damage to the currently active boss
+   * @param {*} damage the number to subtract from the boss' health
+   */
   damage(damage) {
     this.boss.currentHealth -= damage;
     if (this.boss.currentHealth <= 0) {
@@ -644,6 +657,9 @@ export default class MainScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * Upon defeat, the boss is reset and the difficulty of the boss is incremented
+   */
   bossReset() {
     this.boss.setCollideWorldBounds(false);
     this.boss.setVelocityX(0);
@@ -673,6 +689,11 @@ export default class MainScene extends Phaser.Scene {
     this.bossBlast.body.enable = false;
   }
 
+  /**
+   * Fire the blast and set the physics movement in place for the boss
+   * @param {*} x the x coordinate of the boss
+   * @param {*} y the y coordinate of the boss
+   */
   bossBlastFire(x, y) {
     this.bossBlast.body.enable = true;
     this.bossBlast.body.reset(x - 80, y);

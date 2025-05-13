@@ -8,6 +8,7 @@ export default class Preloader extends Phaser.Scene {
   }
 
   preload() {
+    //Make a simple loading screen
     this.load.setBaseURL('https://cdn.phaserfiles.com/v385');
     this.loadText = this.add.text(400, 300, 'Loading ...', { fontFamily: 'Arial', fontSize: 74, color: '#e3f2ed' });
     this.loadText.setOrigin(0.5);

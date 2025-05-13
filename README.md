@@ -1,6 +1,6 @@
 # Phaser App: Sci-fi Shooter
 
-This project is a simple side scrolling shooter game using javascript and Phaser. Assets imported and sourced below are used to facilitate the science fiction nature of the game. Pillars will scroll across the screen, shoot the green one to pass. Every 5 walls a boss will appear. After beating them the next set of 5 walls and the next boss become faster. See how long you can last in this escalating shooter game.
+This project is a simple side scrolling shooter game using javascript and Phaser. Assets imported and sourced below are used to facilitate the science fiction nature of the game. Pillars will scroll across the screen, shoot the green one to pass. Every 5 walls a boss will appear. After beating them the next set of 5 walls become faster and the boss gains more health. See how long you can last in this escalating shooter game.
 
 ## Sources and Credits
 
@@ -23,6 +23,7 @@ This project is a simple side scrolling shooter game using javascript and Phaser
 
 - Node.js (v16 or higher)
 - NPM (v8 or higher)
+- A code editor (VS Code, Sublime Text, etc.)
 
 ### Installation
 
@@ -52,20 +53,15 @@ phaser-app/
 ├── src/                  # Source code
 │   ├── main.js           # Game entry point
 │   └── scenes/
+│       └── Boot.js       # First loading scene
+│       └── MainMenu.js   # Main Menu scene
 │       └── MainScene.js  # Main game scene
+│       └── Preloader.js  # Preloading scene
 ├── index.html            # Game HTML wrapper
 ├── package.json          # Project dependencies
 └── vite.config.mjs       # Vite configuration
+└── netlify.toml          # Netlify deployment configuration
 ```
-
-## Project Tasks
-
-- [ ] Set up the Phaser game configuration
-- [ ] Create a main scene
-- [ ] Load and display at least two images
-- [ ] Add text elements
-- [ ] Implement basic interactivity (clicking, hovering)
-- [ ] Add a simple scoring system
 
 ## Resources Used
 

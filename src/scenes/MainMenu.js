@@ -56,6 +56,7 @@ export default class MainMenu extends Phaser.Scene {
       strokeThickness: 2
     }).setOrigin(0.5);
 
+    // Add animation for phaser logo
     this.tweens.add({
       targets: logo,
       x: 400,
@@ -64,6 +65,7 @@ export default class MainMenu extends Phaser.Scene {
       duration: 600,
     });
 
+    // Insert commands to move to the main game
     this.input.keyboard.once('keydown-SPACE', () => {
 
       this.scene.start('MainScene');
